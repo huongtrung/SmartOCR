@@ -1,16 +1,43 @@
 import React, { Component } from 'react';
-import { ImageBackground, StyleSheet, Button, Text, TouchableOpacity } from 'react-native'
+import { ImageBackground, StyleSheet, Button, Text, TouchableOpacity, Alert } from 'react-native'
+var ImagePicker = require('react-native-image-picker');
 
 class ChooseMethod extends Component {
     static navigationOptions = {
         header: null,
     };
-    state = {}
+    state = {
+        filePath: {},
+    }
+
+    launchPickImage = () => {
+        var options = {
+            storageOptions: {
+                skipBackup: true,
+                path: 'images',
+            },
+        };
+
+        ImagePicker.launchImageLibrary(options, (response) => {
+            if (response.didCancel) {
+                console.log('User cancelled image picker');
+            } else if (response.error) {
+                console.log('ImagePicker Error: ', response.error);
+            } else {
+                let source = response;
+                this.props.navigation.navigate('ConfirmInfo', {
+                    filePath: source,
+                    typeTake : 1,
+                    flagCam: 1
+                })
+            }
+        });
+    };
+
     render() {
         return (
             <ImageBackground source={require('../img/bg_dangky.png')} style={styles.imgBackground}>
                 <Text style={styles.titleText}>Đăng ký thông tin</Text>
-
                 <TouchableOpacity
                     style={styles.button}
                     underlayColor='#fff'>
@@ -19,7 +46,8 @@ class ChooseMethod extends Component {
 
                 <TouchableOpacity
                     style={styles.button}
-                    underlayColor='#fff'>
+                    underlayColor='#fff'
+                    onPress={this.launchPickImage.bind(this)}>
                     <Text style={styles.buttonText}>Chọn ảnh</Text>
                 </TouchableOpacity>
             </ImageBackground>
@@ -39,7 +67,8 @@ const styles = StyleSheet.create({
     titleText: {
         fontSize: 25,
         fontWeight: 'bold',
-        color: '#695fd5'
+        color: '#695fd5',
+        marginBottom: 20
     },
     button: {
         marginTop: 20,
@@ -52,8 +81,8 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 20,
         textAlign: 'center',
-        paddingLeft: 80,
-        paddingRight: 80
+        paddingLeft: 100,
+        paddingRight: 100
     }
 })
 

@@ -8,13 +8,16 @@ import SplashScreen from "./src/screens/SplashScreen";
 import MainScreen from "./src/screens/MainScreen";
 import NewScreen from "./src/screens/NewScreen";
 import ChooseMethod from "./src/screens/ChooseMethod";
+import ConfirmInfo from "./src/screens/ConfirmInfo";
+
 
 const RootStack = createStackNavigator(
   {
     SplashScreen: SplashScreen,
     MainScreen: MainScreen,
     NewScreen: NewScreen,
-    ChooseMethod: ChooseMethod
+    ChooseMethod: ChooseMethod,
+    ConfirmInfo: ConfirmInfo
   },
   {
     initialRouteName: 'SplashScreen',
