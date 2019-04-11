@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ImageBackground, Alert, Text, StyleSheet, Image } from 'react-native'
+import { ImageBackground, StyleSheet } from 'react-native'
 
 export default class SplashScreen extends Component {
     static navigationOptions = {
@@ -20,9 +20,7 @@ export default class SplashScreen extends Component {
     render() {
         if (!this.state.timePassed) {
             return (
-                <ImageBackground source={require('../img/splash.png')} style={styles.imgBackground}>
-                    <Image source={require('../img/logo.png')} style={styles.logo} />
-                </ImageBackground>
+                <ImageBackground resizeMode="stretch" source={require('../img/splash_v2.png')} style={styles.imgBackground} />
             );
         } else {
             return (
@@ -38,7 +36,4 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         alignItems: 'center'
     },
-    logo: {
-        marginBottom: 36
-    }
 })

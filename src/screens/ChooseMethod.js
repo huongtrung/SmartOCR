@@ -1,6 +1,15 @@
 import React, { Component } from 'react';
-import { ImageBackground, StyleSheet, Button, Text, TouchableOpacity, Alert } from 'react-native'
+import { ImageBackground, StyleSheet, View, Text, TouchableOpacity, NetInfo, Alert } from 'react-native'
+import I18n, { getLanguages } from 'react-native-i18n';
+import Header from '../components/Header'
+
 var ImagePicker = require('react-native-image-picker');
+I18n.fallbacks = true;
+
+I18n.translations = {
+    'en': require('../translation/en'),
+    'ja': require('../translation/ja'),
+}
 
 class ChooseMethod extends Component {
     static navigationOptions = {
@@ -27,7 +36,7 @@ class ChooseMethod extends Component {
                 let source = response;
                 this.props.navigation.navigate('ConfirmInfo', {
                     filePath: source,
-                    typeTake : 1,
+                    typeTake: 1,
                     flagCam: 1
                 })
             }
@@ -36,47 +45,43 @@ class ChooseMethod extends Component {
 
     render() {
         return (
-            <ImageBackground source={require('../img/bg_dangky.png')} style={styles.imgBackground}>
-                <Text style={styles.titleText}>Đăng ký thông tin</Text>
-                <TouchableOpacity
-                    style={styles.button}
-                    underlayColor='#fff'>
-                    <Text style={styles.buttonText}>Chụp ảnh</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={styles.button}
-                    underlayColor='#fff'
-                    onPress={this.launchPickImage.bind(this)}>
-                    <Text style={styles.buttonText}>Chọn ảnh</Text>
-                </TouchableOpacity>
-            </ImageBackground>
+            <View style={styles.container}>
+                <Header title={I18n.t('title_method')} />
+                <ImageBackground source={require('../img/bg_dangky.png')} style={styles.imgBackground}>
+                    <TouchableOpacity
+                        underlayColor='#fff'
+                        style={styles.button}>
+                        <Text style={styles.buttonText}>{I18n.t('method_pick')}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        underlayColor='#fff'
+                        style={styles.button}
+                        onPress={this.launchPickImage.bind(this)}>
+                        <Text style={styles.buttonText}>{I18n.t('method_choose')}</Text>
+                    </TouchableOpacity>
+                </ImageBackground>
+            </View>
         );
     }
 }
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
     imgBackground: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center'
     },
-    logo: {
-        marginBottom: 36
-    },
-    titleText: {
-        fontSize: 25,
-        fontWeight: 'bold',
-        color: '#695fd5',
-        marginBottom: 20
-    },
     button: {
+        backgroundColor: '#f33046',
         marginTop: 20,
         paddingTop: 10,
         paddingBottom: 10,
-        backgroundColor: '#695fd5',
         borderRadius: 30,
     },
+
     buttonText: {
         color: '#fff',
         fontSize: 20,

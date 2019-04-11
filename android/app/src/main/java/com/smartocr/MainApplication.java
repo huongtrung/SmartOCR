@@ -3,6 +3,8 @@ package com.smartocr;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.BV.LinearGradient.LinearGradientPackage;
+import com.AlexanderZaytsev.RNI18n.RNI18nPackage;
 import com.imagepicker.ImagePickerPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.wix.RNCameraKit.RNCameraKitPackage;
@@ -27,6 +29,8 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new LinearGradientPackage(),
+            new RNI18nPackage(),
             new ImagePickerPackage(),
             new VectorIconsPackage(),
             new RNCameraKitPackage(),
