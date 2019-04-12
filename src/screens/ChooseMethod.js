@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
-import { ImageBackground, StyleSheet, View, Text, TouchableOpacity, NetInfo, Alert } from 'react-native'
+import { ImageBackground, StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
 import I18n, { getLanguages } from 'react-native-i18n';
-import Header from '../components/Header'
+import Header from '../components/Header';
+import LinearGradient from 'react-native-linear-gradient';
+
+import {
+    CameraKitCamera,
+} from 'react-native-camera-kit';
 
 var ImagePicker = require('react-native-image-picker');
 I18n.fallbacks = true;
@@ -17,6 +22,12 @@ class ChooseMethod extends Component {
     };
     state = {
         filePath: {},
+    }
+
+    componentWillMount() {
+        getLanguages().then(languages => {
+            this.setState({ languages });
+        });
     }
 
     launchPickImage = () => {
@@ -36,32 +47,50 @@ class ChooseMethod extends Component {
                 let source = response;
                 this.props.navigation.navigate('ConfirmInfo', {
                     filePath: source,
-                    typeTake: 1,
+                    typeTake: 2,
                     flagCam: 1
                 })
             }
         });
     };
 
+    openCameraScreen = () => {
+        this.props.navigation.navigate('CameraScreen')
+    }
+
     render() {
         return (
             <View style={styles.container}>
                 <Header title={I18n.t('title_method')} />
-                <ImageBackground source={require('../img/bg_dangky.png')} style={styles.imgBackground}>
+                <ImageBackground resizeMode="cover" source={require('../img/dangky_bg.png')} style={styles.imgBackground}>
+                    <Text style={styles.buttonText}>{I18n.t('method_pick')}</Text>
                     <TouchableOpacity
                         underlayColor='#fff'
-                        style={styles.button}>
-                        <Text style={styles.buttonText}>{I18n.t('method_pick')}</Text>
+                        onPress={this.openCameraScreen.bind(this)}>
+                        <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['#f33f5e', '#ab6f84']}  style={styles.button}>
+                            <Text style={styles.buttonText}>{I18n.t('method_pick')}</Text>
+                        </LinearGradient>
                     </TouchableOpacity>
                     <TouchableOpacity
                         underlayColor='#fff'
-                        style={styles.button}
                         onPress={this.launchPickImage.bind(this)}>
-                        <Text style={styles.buttonText}>{I18n.t('method_choose')}</Text>
+                        <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['#f33f5e', '#ab6f84']} style={styles.button}>
+                            <Text style={styles.buttonText}>{I18n.t('method_choose')}</Text>
+                        </LinearGradient>
                     </TouchableOpacity>
                 </ImageBackground>
             </View>
         );
+    }
+
+    async onCheckCameraAuthoPressed() {
+        const success = await CameraKitCamera.checkDeviceCameraAuthorizationStatus();
+        if (success) {
+            Alert.alert('You have permission')
+        }
+        else {
+            Alert.alert('No permission')
+        }
     }
 }
 
