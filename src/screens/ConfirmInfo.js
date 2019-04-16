@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import I18n, { getLanguages } from 'react-native-i18n';
 import axios from 'react-native-axios';
 import LinearGradient from 'react-native-linear-gradient';
+import * as Constant from '../Constant';
 
 var ImagePicker = require('react-native-image-picker');
 I18n.fallbacks = true;
@@ -18,10 +19,10 @@ class ConfirmInfo extends Component {
 
         const { navigation } = this.props;
         filePath = navigation.getParam('filePath', ''),
-            typeTake = navigation.getParam('typeTake', 1)
+        typeTake = navigation.getParam('typeTake', 1)
 
         this.state = {
-            mFilePath: typeTake == 1 ? 'file://' + filePath.uri : filePath.uri,
+            mFilePath: typeTake == Constant.TYPE_TAKE_CAMERA ? 'file://' + filePath : filePath.uri,
         };
         console.log('filePath', filePath)
 
@@ -49,9 +50,9 @@ class ConfirmInfo extends Component {
 
     uploadImage = () => {
         const form = new FormData()
-        form.append('image[image]', {
+        form.append('image', {
             name: 'image',
-            uri: mFilePath,
+            uri: this.state.mFilePath,
             type: 'image/*'
         })
         form.append('encode', 1)

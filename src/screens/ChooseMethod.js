@@ -3,6 +3,7 @@ import { ImageBackground, StyleSheet, View, Text, TouchableOpacity, Alert } from
 import I18n, { getLanguages } from 'react-native-i18n';
 import Header from '../components/Header';
 import LinearGradient from 'react-native-linear-gradient';
+import * as Constant from '../Constant';
 
 import {
     CameraKitCamera,
@@ -47,8 +48,8 @@ class ChooseMethod extends Component {
                 let source = response;
                 this.props.navigation.navigate('ConfirmInfo', {
                     filePath: source,
-                    typeTake: 2,
-                    flagCam: 1
+                    typeTake: Constant.TYPE_TAKE_GALLERY,
+                    flagCam: Constant.TYPE_CAMERA_FRONT
                 })
             }
         });

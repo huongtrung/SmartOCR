@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, ListView, Image, ActivityIndicator, Alert } from 'react-native';
+import { StyleSheet, Text, View, ListView, Image, Alert } from 'react-native';
 
 export default class Index extends Component {
 

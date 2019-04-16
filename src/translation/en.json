@@ -7,5 +7,8 @@
   "title_image_back": "Ảnh chụp mặt sau",
   "title_confirm_header": "Xác nhận thông tin",
   "title_confirm": "Xác nhận",
-  "title_type": "Chọn lại"
+  "title_type": "Chọn lại",
+  "title_not_connect" : "Không có kết nối internet",
+  "title_try" : "Hãy bật kết nối internet và thử lại sau !"
+
 }

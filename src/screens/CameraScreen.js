@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-
 import { CameraKitCameraScreen } from 'react-native-camera-kit';
+import * as Constant from '../Constant';
 
 export default class CameraScreen extends Component {
  
@@ -16,9 +16,9 @@ export default class CameraScreen extends Component {
 
 
     this.props.navigation.navigate('ConfirmInfo', {
-      filePath: filePath,
-      typeTake: 1,
-      flagCam: 1
+      filePath: filePath.uri,
+      typeTake: Constant.TYPE_TAKE_CAMERA,
+      flagCam: Constant.TYPE_CAMERA_FRONT
     })
   }
 
@@ -31,7 +31,6 @@ export default class CameraScreen extends Component {
           flashMode: 'off',             
           focusMode: 'on',              
           zoomMode: 'on',
-          ratioOverlay:'3:4'       
         }}
       />
     );
