@@ -1,6 +1,7 @@
 import * as ActionTypes from './ActionType';
 import { connect } from 'react-redux';
 import axios from 'react-native-axios';
+import * as Constant from '../Constant';
 import GetDocumentComponent from '../components/GetDocumentComponent';
 
 const mapStateToProps = (state) => ({
@@ -16,7 +17,7 @@ const mapDispatchToProps = (dispatch) => ({
 export const GetChooseDocument = () => {
     return dispatch => {
         dispatch(serviceActionPending());
-        axios.get('http://150.95.110.70:3000/listDocument', { headers: { api_key: 'a08eb42a-4a57-449b-84f4-1f67219f2679' } })
+        axios.get('http://150.95.110.70:3000/listDocument', { headers: { api_key: Constant.API_KEY } })
             .then(response => {
                 console.log('response', response.data);
                 dispatch(serviceActionSuccess(response.data))

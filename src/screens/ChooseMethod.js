@@ -49,7 +49,7 @@ class ChooseMethod extends Component {
                 this.props.navigation.navigate('ConfirmInfo', {
                     filePath: source,
                     typeTake: Constant.TYPE_TAKE_GALLERY,
-                    flagCam: Constant.TYPE_CAMERA_FRONT
+                    flagCam: Constant.TYPE_FRONT
                 })
             }
         });
@@ -68,7 +68,7 @@ class ChooseMethod extends Component {
                     <TouchableOpacity
                         underlayColor='#fff'
                         onPress={this.openCameraScreen.bind(this)}>
-                        <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['#f33f5e', '#ab6f84']}  style={styles.button}>
+                        <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['#f33f5e', '#ab6f84']} style={styles.button}>
                             <Text style={styles.buttonText}>{I18n.t('method_pick')}</Text>
                         </LinearGradient>
                     </TouchableOpacity>
@@ -87,10 +87,10 @@ class ChooseMethod extends Component {
     async onCheckCameraAuthoPressed() {
         const success = await CameraKitCamera.checkDeviceCameraAuthorizationStatus();
         if (success) {
-            Alert.alert('You have permission')
+            console.log('You have permission')
         }
         else {
-            Alert.alert('No permission')
+            Alert.alert(I18n.t('title_permission_cam'))
         }
     }
 }

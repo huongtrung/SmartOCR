@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
-import { View, Image, StyleSheet, Text, TouchableOpacity, ScrollView, BackHandler, ToastAndroid } from 'react-native';
+import { View, Image, StyleSheet, Text, TouchableOpacity, ScrollView, BackHandler, ToastAndroid, ActivityIndicator } from 'react-native';
 import Header from '../components/Header';
 import I18n, { getLanguages } from 'react-native-i18n';
 import axios from 'react-native-axios';
 import LinearGradient from 'react-native-linear-gradient';
+import Loading from 'react-native-whc-loading'
 import * as Constant from '../Constant';
+import AsyncStorage from '@react-native-community/async-storage';
+import NetInfo from '@react-native-community/netinfo';
 
 var ImagePicker = require('react-native-image-picker');
 I18n.fallbacks = true;
@@ -16,16 +19,17 @@ I18n.translations = {
 class ConfirmInfo extends Component {
     constructor(props) {
         super(props);
-
-        const { navigation } = this.props;
-        filePath = navigation.getParam('filePath', ''),
-        typeTake = navigation.getParam('typeTake', 1)
+        const { navigation } = this.props
+        filePath = navigation.getParam('filePath', '')
+        typeTake = navigation.getParam('typeTake', Constant.TYPE_TAKE_CAMERA)
+        flagCam = navigation.getParam('flagCam', Constant.TYPE_FRONT)
 
         this.state = {
             mFilePath: typeTake == Constant.TYPE_TAKE_CAMERA ? 'file://' + filePath : filePath.uri,
+            mTypeTake: typeTake,
+            mFlagCam: flagCam
         };
         console.log('filePath', filePath)
-
     }
 
     componentWillMount() {
@@ -37,6 +41,26 @@ class ConfirmInfo extends Component {
 
     componentDidMount() {
         BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+        NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectionChange.bind(this));
+        NetInfo.isConnected.fetch().done(
+            (isConnected) => { this.setState({ isConnected: isConnected }); }
+        );
+    }
+
+    componentWillUnmount() {
+        NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectionChange);
+    }
+
+    handleConnectionChange = (isConnected) => {
+        if (!isConnected) {
+            Alert.alert(
+                I18n.t('title_not_connect'),
+                I18n.t('title_try'),
+                [
+                    { text: 'OK', onPress: () => BackHandler.exitApp() },
+                ]
+            )
+        }
     }
 
     handleBackButton() {
@@ -49,6 +73,7 @@ class ConfirmInfo extends Component {
     };
 
     uploadImage = () => {
+        this.refs.loading.show();
         const form = new FormData()
         form.append('image', {
             name: 'image',
@@ -58,13 +83,34 @@ class ConfirmInfo extends Component {
         form.append('encode', 1)
         const headers = {
             'Content-Type': 'multipart/form-data',
-            'api-key': 'a08eb42a-4a57-449b-84f4-1f67219f2679'
+            'api-key': Constant.API_KEY
         }
         return axios.post('http://150.95.109.122:8080/id/v1/recognition', form, { headers }).then(res => {
+            this.refs.loading.close();
             console.log(res.data);
             console.log(res.status);
+            if (res.status == Constant.RESULT_OK && res.data.result_code == Constant.RESULT_OK) {
+                switch (this.state.mFlagCam) {
+                    case Constant.TYPE_FRONT:
+                        AsyncStorage.setItem(Constant.DATA_FRONT, JSON.stringify(res.data), () => { });
+                        AsyncStorage.setItem(Constant.IMG_FRONT, this.state.mFilePath);
+                        this.setState({
+                            mFlagCam: Constant.TYPE_BACK
+                        })
+                        this.launchPickImage()
+                        break;
+                    case Constant.TYPE_BACK:
+                        AsyncStorage.setItem(Constant.DATA_BACK, JSON.stringify(res.data), () => { });
+                        AsyncStorage.setItem(Constant.IMG_BACK, this.state.mFilePath);
+                        this.props.navigation.navigate('InfoDocumentScreen')
+                        break;
+                }
+            } else {
+
+            }
         })
             .catch(err => {
+                this.refs.loading.close();
                 console.log(err.message);
             });
     }
@@ -116,17 +162,12 @@ class ConfirmInfo extends Component {
         }
     };
 
-
-
     render() {
-        const { navigation } = this.props;
-        const flagCam = navigation.getParam('flagCam', 1)
-
         return (
             <ScrollView>
                 <View style={styles.container}>
                     <Header title={I18n.t('title_confirm_header')} />
-                    <Text style={styles.titleText}>{flagCam == 1 ? I18n.t('title_image_front') : I18n.t('title_image_back')}</Text>
+                    <Text style={styles.titleText}>{this.state.mFlagCam == Constant.TYPE_FRONT ? I18n.t('title_image_front') : I18n.t('title_image_back')}</Text>
                     <Image
                         source={{ uri: this.state.mFilePath }}
                         style={styles.img}
@@ -143,16 +184,16 @@ class ConfirmInfo extends Component {
                         underlayColor='#fff'
                         onPress={this.launchPickImage.bind(this)}>
                         <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['#f33f5e', '#ab6f84']} style={[styles.button, styles.buttonTwo]}>
-                            <Text style={styles.buttonText}>{I18n.t('title_type')}</Text>
+                            <Text style={styles.buttonText}>
+                                {this.state.mTypeTake == Constant.TYPE_TAKE_CAMERA ? I18n.t('title_take_again') : I18n.t('title_choose_again')}</Text>
                         </LinearGradient>
                     </TouchableOpacity>
-
+                    <Loading ref='loading' indicatorColor='#f33f5e' backgroundColor='rgba(100, 100, 100, 0.5)' />
                 </View>
             </ScrollView>
         );
     }
 }
-
 
 const styles = StyleSheet.create({
     container: {
@@ -185,7 +226,7 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 20,
         textAlign: 'center',
-    }
+    },
 })
 
 export default ConfirmInfo;

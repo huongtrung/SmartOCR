@@ -5,8 +5,7 @@ import { Provider } from "react-redux";
 import store from "./src/reducers/Store";
 
 import SplashScreen from "./src/screens/SplashScreen";
-import MainScreen from "./src/screens/MainScreen";
-import NewScreen from "./src/screens/NewScreen";
+import InfoDocumentScreen from "./src/screens/InfoDocumentScreen";
 import ChooseMethod from "./src/screens/ChooseMethod";
 import ConfirmInfo from "./src/screens/ConfirmInfo";
 import CameraScreen from './src/screens/CameraScreen';
@@ -15,8 +14,7 @@ import ChooseDocument from './src/screens/ChooseDocument';
 const RootStack = createStackNavigator(
   {
     SplashScreen: SplashScreen,
-    MainScreen: MainScreen,
-    NewScreen: NewScreen,
+    InfoDocumentScreen: InfoDocumentScreen,
     ChooseMethod: ChooseMethod,
     ConfirmInfo: ConfirmInfo,
     CameraScreen: CameraScreen,

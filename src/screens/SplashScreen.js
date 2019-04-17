@@ -31,7 +31,7 @@ export default class SplashScreen extends Component {
         if (isConnected) {
             setTimeout(() => {
                 this.setTimePassed();
-            }, 3000);
+            }, 2000);
         }
         else {
             Alert.alert(
@@ -42,9 +42,8 @@ export default class SplashScreen extends Component {
                 ]
             )
         }
-
-        this.setState({ isConnected: isConnected });
     }
+    
     setTimePassed() {
         this.setState({ timePassed: true });
     }
