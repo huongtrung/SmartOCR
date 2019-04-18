@@ -21,5 +21,8 @@
   "title_sex":"Giới tính :",
   "title_country":"Quốc tịch:",
   "title_address": "Địa chỉ :",
-  "title_permission_cam":"Bạn phải bật quyền truy cập máy ảnh"
+  "title_permission_cam":"Bạn phải bật quyền truy cập máy ảnh",
+  "title_vn":"Vietnamese",
+  "title_jp":"Japanese",
+  "title_doc":"Tài liệu"
 }

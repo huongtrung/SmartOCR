@@ -13,7 +13,7 @@ export default Header;
 
 const styles = StyleSheet.create({
     imgBackground: {
-        height: 47,
+        height: 60,
     },
     title: {
         fontSize: 20,

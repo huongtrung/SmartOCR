@@ -188,7 +188,7 @@ class ConfirmInfo extends Component {
                                 {this.state.mTypeTake == Constant.TYPE_TAKE_CAMERA ? I18n.t('title_take_again') : I18n.t('title_choose_again')}</Text>
                         </LinearGradient>
                     </TouchableOpacity>
-                    <Loading ref='loading' indicatorColor='#f33f5e' backgroundColor='rgba(100, 100, 100, 0.5)' />
+                    <Loading ref='loading' indicatorColor='#f33f5e' backgroundColor='transparent' />
                 </View>
             </ScrollView>
         );
@@ -216,8 +216,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#f33046',
         borderRadius: 30,
         marginTop: 20,
-        marginLeft: 15,
-        marginRight: 15,
+        marginLeft: 30,
+        marginRight: 30,
     },
     buttonTwo: {
         marginBottom: 20

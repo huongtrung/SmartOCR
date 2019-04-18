@@ -1,12 +1,17 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, ListView, Image, Alert, List, FlatList } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Image, Alert, List, FlatList } from 'react-native';
+import I18n, { getLanguages } from 'react-native-i18n';
+I18n.fallbacks = true;
 
+I18n.translations = {
+    'en': require('../translation/en'),
+    'ja': require('../translation/ja'),
+}
 export default class GetDocument extends Component {
     constructor(props) {
         super(props);
         this.state = {
             data: [],
-            dataVN: [],
         }
     }
 
@@ -16,11 +21,12 @@ export default class GetDocument extends Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.data != null) {
-            console.log('the state', nextProps);
             console.log('list', nextProps.data.document);
             this.setState({
                 data: nextProps.data.document,
             });
+            console.log('DATA', nextProps.data.document);
+            console.log('DATA',this.state.data);
         }
         if (nextProps.error != undefined) {
             Alert.alert(
@@ -33,17 +39,34 @@ export default class GetDocument extends Component {
         }
     }
 
+    // prepData = () => {
+    //     let dataVN  = []
+    //     for (let i = 0; i < this.state.data.length; i++) {
+    //         dataVN.push(this.state.data[i])
+    //     }
+    //     return dataVN
+    //   }
+    
+    //   renderItem = ({ item }) => {
+    //     return (
+    //       <View style={styles.item} key={item.id}>
+    //         <Text>{item.name}</Text>
+    //       </View>
+    //     )
+    //   }
+
     render() {
         return (
-            <FlatList
-                data={this.state.data}
-                renderItem={({ item }) => (
-                    <View style={{ backgroundColor: 'white' }}>
-                        <Text>{item.id}</Text>
-                    </View>
-                )}
-                keyExtractor={(item, index) => index.toString()}
-            />
+            <View style={styles.container}>
+                <View style={styles.containerRow}>
+                    <Text style={styles.textLang}>{I18n.t('title_vn')}</Text>
+                    {/* {this.prepData().map((item) => this.renderItem({ item }))} */}
+                </View>
+                <View style={styles.containerRow} >
+                    <Text style={styles.textLang}>{I18n.t('title_jp')}</Text>
+                    {/* {this.prepData().map((item) => this.renderItem({ item }))} */}
+                </View>
+            </View>
         );
     }
 }
@@ -51,37 +74,16 @@ export default class GetDocument extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5FCFF'
-    },
-    containerText: {
-        flexDirection: 'column',
-    },
-    containerList: {
-        flex: 1,
-        padding: 12,
         flexDirection: 'row',
         alignItems: 'center',
-    },
-    text: {
-        marginLeft: 12,
-        fontSize: 16,
-    },
-    text: {
-        marginLeft: 12,
-        fontSize: 12,
-    },
-    photo: {
-        height: 80,
-        width: 80,
-        borderRadius: 20,
-        backgroundColor: '#000000'
-    },
-
-    centering: {
-        alignItems: 'center',
         justifyContent: 'center',
-        padding: 8,
     },
+    containerRow: {
+        flex: 1,
+    },
+    textLang: {
+        textAlign: 'center',
+    }
 });
 
 

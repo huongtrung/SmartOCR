@@ -30,7 +30,7 @@ export default class SplashScreen extends Component {
     handleConnectionChange = (isConnected) => {
         if (isConnected) {
             setTimeout(() => {
-                this.setTimePassed();
+                this.props.navigation.navigate('ChooseDocument')
             }, 2000);
         }
         else {
@@ -43,21 +43,14 @@ export default class SplashScreen extends Component {
             )
         }
     }
-    
-    setTimePassed() {
-        this.setState({ timePassed: true });
-    }
+
+
 
     render() {
-        if (!this.state.timePassed) {
-            return (
-                <ImageBackground resizeMode="stretch" source={require('../img/splash_v2.png')} style={styles.imgBackground} />
-            );
-        } else {
-            return (
-                this.props.navigation.navigate('ChooseMethod')
-            )
-        }
+        return (
+            <ImageBackground resizeMode="stretch" source={require('../img/splash_v2.png')} style={styles.imgBackground} />
+        );
+
     }
 }
 

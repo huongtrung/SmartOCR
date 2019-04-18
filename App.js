@@ -8,8 +8,8 @@ import SplashScreen from "./src/screens/SplashScreen";
 import InfoDocumentScreen from "./src/screens/InfoDocumentScreen";
 import ChooseMethod from "./src/screens/ChooseMethod";
 import ConfirmInfo from "./src/screens/ConfirmInfo";
-import CameraScreen from './src/screens/CameraScreen';
 import ChooseDocument from './src/screens/ChooseDocument';
+import CameraScreen from './src/screens/CameraScreen';
 
 const RootStack = createStackNavigator(
   {
@@ -17,8 +17,8 @@ const RootStack = createStackNavigator(
     InfoDocumentScreen: InfoDocumentScreen,
     ChooseMethod: ChooseMethod,
     ConfirmInfo: ConfirmInfo,
-    CameraScreen: CameraScreen,
-    ChooseDocument: ChooseDocument
+    ChooseDocument: ChooseDocument,
+    CameraScreen: CameraScreen
   },
   {
     initialRouteName: 'SplashScreen',
