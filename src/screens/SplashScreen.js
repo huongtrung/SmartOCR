@@ -14,15 +14,15 @@ export default class SplashScreen extends Component {
     static navigationOptions = {
         header: null,
     };
-   
+
     componentWillMount() {
         setTimeout(() => {
-            // this.props.navigation.navigate('ChooseDocument')
-            this.props.navigation.navigate('ChooseMethod', {
-                hasBack: true,
-                image: '',
-                url: 'https://apitenten.smartocr.vn/id/v1/recognition'
-            })
+             this.props.navigation.navigate('ChooseDocument')
+//            this.props.navigation.navigate('ChooseMethod', {
+//                hasBack: true,
+//                image: '',
+//                url: 'https://apitenten.smartocr.vn/id/v1/recognition'
+//            })
         }, 2000);
     }
     componentDidMount() {

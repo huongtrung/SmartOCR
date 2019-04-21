@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import { View, ScrollView, StyleSheet, Alert, Text, Button, TouchableOpacity } from 'react-native'
+import { View, ScrollView, StyleSheet, Alert, Text, Button, TouchableOpacity, BackHandler, Linking} from 'react-native'
 import Header from '../components/Header';
 import I18n, { getLanguages } from 'react-native-i18n';
 import NetInfo from '@react-native-community/netinfo';
 import axios from 'react-native-axios';
 import * as Constant from '../Constant';
-import Loading from 'react-native-whc-loading'
 I18n.fallbacks = true;
 
 I18n.translations = {
@@ -19,12 +18,31 @@ class ChooseDocument extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: []
+            data: [],
+            webPage : '',
+            lang : ''
         }
     }
 
     componentWillMount() {
-        this.getDocumentAPI()
+      getLanguages().then(languages => {
+          this.setState({
+            lang : languages[0]
+          })
+          console.log('languages[0]',this.state.lang)
+       });
+//       switch(this.state.lang.substring(0, 2)){
+//          case 'en':
+//            console.log('en')
+//            break;
+//          case 'vi':
+//             console.log('"vi"')
+//             break;
+//          case 'jp':
+//            console.log('jp')
+//            break;
+//       }
+      this.getDocumentAPI()
     }
     componentDidMount() {
         NetInfo.isConnected.addEventListener(
@@ -60,6 +78,7 @@ class ChooseDocument extends Component {
             .then(response => {
                 console.log('response', response.data);
                 this.setState({
+                    webPage : response.data.web_page,
                     data: response.data.document
                 })
             })
@@ -74,7 +93,7 @@ class ChooseDocument extends Component {
             I18n.t('title_error'),
             I18n.t('title_msg'),
             [
-                { text: 'OK', onPress: () => { } },
+                { text: 'OK', onPress: () => BackHandler.exitApp() },
             ]
         )
     }
@@ -144,6 +163,7 @@ class ChooseDocument extends Component {
 
     render() {
         return (
+        <View style={{flex: 1}}>
             <ScrollView>
                 <View style={styles.containerView}>
                     <Header title={I18n.t('title_doc')} />
@@ -157,9 +177,12 @@ class ChooseDocument extends Component {
                             {this.prepDataJP().map((item) => this.renderItemJP({ item }))}
                         </View>
                     </View>
-                    <Loading ref='loading' indicatorColor='#f33f5e' backgroundColor='transparent' />
                 </View>
             </ScrollView>
+             <View style={styles.bottomView}>
+                <Text style={styles.textInfo} onPress={ ()=>{ Linking.openURL(this.state.webPage)}}>{I18n.t('title_info')}</Text>
+             </View>
+        </View>
         );
     }
 }
@@ -168,7 +191,7 @@ export default ChooseDocument;
 
 const styles = StyleSheet.create({
     containerView: {
-        flex: 1
+        flex: 1,
     },
     container: {
         flex: 1,
@@ -193,10 +216,19 @@ const styles = StyleSheet.create({
         marginRight: 10,
         marginBottom: 10
     },
-
     buttonText: {
         color: '#fff',
         fontSize: 18,
         textAlign: 'center',
+    },
+    bottomView:{
+        flex: 1,
+        justifyContent: 'flex-end',
+        marginBottom: 15
+    },
+    textInfo:{
+        textAlign: 'center',
+        fontSize: 15,
+        textDecorationLine: 'underline',
     }
 })

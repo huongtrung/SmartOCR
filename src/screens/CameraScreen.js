@@ -92,7 +92,6 @@ export default class CameraScreen extends React.Component {
   takePicture = async function () {
     this.refs.loading.show();
     if (this.camera) {
-
       options = { fixOrientation: true };
       const data = await this.camera.takePictureAsync(options);
       console.log(data)

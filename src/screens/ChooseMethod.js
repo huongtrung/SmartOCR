@@ -34,12 +34,6 @@ class ChooseMethod extends Component {
         console.log(this.state.mUrl);
     }
 
-    componentWillMount() {
-        getLanguages().then(languages => {
-            this.setState({ languages });
-        });
-    }
-
     launchPickImage = () => {
         var options = {
             storageOptions: {
