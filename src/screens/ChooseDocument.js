@@ -56,7 +56,7 @@ class ChooseDocument extends Component {
     };
 
     getDocumentAPI = () => {
-        axios.get('http://tenten.smartocr.vn/listDocument', { headers: { 'api-key': Constant.API_KEY } })
+        axios.get('https://tenten.smartocr.vn/listDocument', { headers: { 'api-key': Constant.API_KEY } })
             .then(response => {
                 console.log('response', response.data);
                 this.setState({
