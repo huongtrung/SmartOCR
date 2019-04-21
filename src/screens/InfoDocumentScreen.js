@@ -96,7 +96,7 @@ class InfoDocumentScreen extends Component {
         let keys = [Constant.DATA_FRONT, Constant.DATA_BACK, Constant.IMG_BACK, Constant.IMG_FRONT];
         AsyncStorage.multiRemove(keys, (err) => {
             console.log('remove')
-        }); 
+        });
     }
 
     render() {

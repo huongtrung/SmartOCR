@@ -18,7 +18,7 @@ const RootStack = createStackNavigator(
     ChooseMethod: ChooseMethod,
     ConfirmInfo: ConfirmInfo,
     ChooseDocument: ChooseDocument,
-    CameraScreen: CameraScreen
+    CameraScreen: CameraScreen,
   },
   {
     initialRouteName: 'SplashScreen',

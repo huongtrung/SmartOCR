@@ -1,13 +1,9 @@
 import React, { Component } from 'react';
-import { ImageBackground, StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
+import { ImageBackground, StyleSheet, View, Text, TouchableOpacity, Alert, Image } from 'react-native';
 import I18n, { getLanguages } from 'react-native-i18n';
 import Header from '../components/Header';
 import LinearGradient from 'react-native-linear-gradient';
 import * as Constant from '../Constant';
-
-import {
-    CameraKitCamera,
-} from 'react-native-camera-kit';
 
 var ImagePicker = require('react-native-image-picker');
 I18n.fallbacks = true;
@@ -21,8 +17,21 @@ class ChooseMethod extends Component {
     static navigationOptions = {
         header: null,
     };
-    state = {
-        filePath: {},
+    constructor(props) {
+        super(props);
+        const { navigation } = this.props
+        hasBack = navigation.getParam('hasBack', true)
+        image = navigation.getParam('image', '')
+        url = navigation.getParam('url', '')
+
+        this.state = {
+            filePath: {},
+            mHasBack: hasBack,
+            mImage: image,
+            mUrl: url
+        }
+        console.log(this.state.mHasBack);
+        console.log(this.state.mUrl);
     }
 
     componentWillMount() {
@@ -49,14 +58,20 @@ class ChooseMethod extends Component {
                 this.props.navigation.navigate('ConfirmInfo', {
                     filePath: source,
                     typeTake: Constant.TYPE_TAKE_GALLERY,
-                    flagCam: Constant.TYPE_FRONT
+                    flagCam: Constant.TYPE_FRONT,
+                    hasBack: this.state.mHasBack,
+                    url: this.state.mUrl
                 })
             }
         });
     };
 
     openCameraScreen = () => {
-        this.props.navigation.navigate('CameraScreen')
+        this.props.navigation.navigate('CameraScreen', {
+            flagCam: Constant.TYPE_FRONT,
+            hasBack: this.state.mHasBack,
+            url: this.state.mUrl
+        })
     }
 
     render() {
@@ -64,7 +79,7 @@ class ChooseMethod extends Component {
             <View style={styles.container}>
                 <Header title={I18n.t('title_method')} />
                 <ImageBackground resizeMode="cover" source={require('../img/dangky_bg.png')} style={styles.imgBackground}>
-                    <Text style={styles.buttonText}>{I18n.t('method_pick')}</Text>
+                    <Image source={require('../img/image_not_found.png')} style={{ height: 250,width : 300 }} />
                     <TouchableOpacity
                         underlayColor='#fff'
                         onPress={this.openCameraScreen.bind(this)}>

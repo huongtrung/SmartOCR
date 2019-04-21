@@ -1,15 +1,11 @@
 import React, { Component } from 'react';
 import { View, ScrollView, StyleSheet, Alert, Text, Button, TouchableOpacity } from 'react-native'
 import Header from '../components/Header';
-import GetDocument from "../actions/GetDocumentAction";
 import I18n, { getLanguages } from 'react-native-i18n';
 import NetInfo from '@react-native-community/netinfo';
 import axios from 'react-native-axios';
 import * as Constant from '../Constant';
 import Loading from 'react-native-whc-loading'
-import LinearGradient from 'react-native-linear-gradient';
-
-
 I18n.fallbacks = true;
 
 I18n.translations = {
@@ -60,7 +56,7 @@ class ChooseDocument extends Component {
     };
 
     getDocumentAPI = () => {
-        axios.get('http://150.95.110.70:3000/listDocument', { headers: { api_key: Constant.API_KEY } })
+        axios.get('http://tenten.smartocr.vn/listDocument', { headers: { 'api-key': Constant.API_KEY } })
             .then(response => {
                 console.log('response', response.data);
                 this.setState({
@@ -68,8 +64,19 @@ class ChooseDocument extends Component {
                 })
             })
             .catch(error => {
+                this.errorAlert()
                 console.log('error', error);
             });
+    }
+
+    errorAlert() {
+        Alert.alert(
+            I18n.t('title_error'),
+            I18n.t('title_msg'),
+            [
+                { text: 'OK', onPress: () => { } },
+            ]
+        )
     }
 
     prepDataVN = () => {
@@ -97,9 +104,10 @@ class ChooseDocument extends Component {
     renderItemVN = ({ item }) => {
         return (
             <TouchableOpacity key={item.id}
+                onPress={() => this.chooseItemDocument(item)}
                 style={styles.button}
                 underlayColor='#fff'>
-                    <Text style={styles.buttonText}>{item.name}</Text>
+                <Text style={styles.buttonText}>{item.name}</Text>
             </TouchableOpacity>
         )
     }
@@ -108,11 +116,30 @@ class ChooseDocument extends Component {
         return (
             <View key={item.id}>
                 <Button
+                    onPress={() => this.chooseItemDocument(item)}
                     style={styles.button}
                     title={item.name}
                     color="#34aab7" />
             </View>
         )
+    }
+
+    chooseItemDocument = (item) => {
+        if (item.active) {
+            this.props.navigation.navigate('ChooseMethod', {
+                hasBack: item.has_back,
+                image: item.image,
+                url: item.url
+            })
+        } else {
+            Alert.alert(
+                item.inactive_msg,
+                '',
+                [
+                    { text: 'OK', onPress: () => { } },
+                ]
+            )
+        }
     }
 
     render() {
@@ -127,11 +154,10 @@ class ChooseDocument extends Component {
                         </View>
                         <View style={styles.containerRow} >
                             <Text style={styles.textLang}>{I18n.t('title_jp')}</Text>
-                            <View style={{ width: 200, height: 200 }}>
-                                {this.prepDataJP().map((item) => this.renderItemJP({ item }))}
-                            </View>
+                            {this.prepDataJP().map((item) => this.renderItemJP({ item }))}
                         </View>
                     </View>
+                    <Loading ref='loading' indicatorColor='#f33f5e' backgroundColor='transparent' />
                 </View>
             </ScrollView>
         );
@@ -157,15 +183,15 @@ const styles = StyleSheet.create({
         color: 'black',
         fontWeight: 'bold',
         textAlign: 'center',
-        marginBottom : 20
+        marginBottom: 20
     },
     button: {
         backgroundColor: '#f33046',
         paddingTop: 5,
         paddingBottom: 5,
-        marginLeft : 10,
-        marginRight : 10,
-        marginBottom : 10
+        marginLeft: 10,
+        marginRight: 10,
+        marginBottom: 10
     },
 
     buttonText: {

@@ -5,6 +5,8 @@
   "method_choose": "Chọn ảnh",
   "title_image_front": "Ảnh chụp mặt trước",
   "title_image_back": "Ảnh chụp mặt sau",
+  "title_take_front": "Chụp ảnh mặt trước",
+  "title_take_back": "Chụp ảnh mặt sau",
   "title_confirm_header": "Xác nhận thông tin",
   "title_info_header": "Xác nhận thông tin OCR",
   "title_confirm": "Xác nhận",
@@ -24,5 +26,7 @@
   "title_permission_cam":"Bạn phải bật quyền truy cập máy ảnh",
   "title_vn":"Vietnamese",
   "title_jp":"Japanese",
-  "title_doc":"Tài liệu"
+  "title_doc":"Tài liệu",
+  "title_error":"Có lỗi xảy ra ",
+  "title_msg":"Hãy thử lại sau"
 }

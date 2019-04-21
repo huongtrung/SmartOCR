@@ -9,28 +9,52 @@ import {
 } from 'react-native';
 import { RNCamera } from 'react-native-camera';
 import LinearGradient from 'react-native-linear-gradient';
+import * as Constant from '../Constant';
+import Loading from 'react-native-whc-loading'
+import I18n, { getLanguages } from 'react-native-i18n';
 
-export default class CameraScreen1 extends React.Component {
+I18n.fallbacks = true;
+
+I18n.translations = {
+  'en': require('../translation/en'),
+  'ja': require('../translation/ja'),
+}
+
+export default class CameraScreen extends React.Component {
   static navigationOptions = {
     header: null,
   };
 
-  state = {
-    flash: 'off',
-    zoom: 0,
-    autoFocus: 'on',
-    autoFocusPoint: {
-      normalized: { x: 0.5, y: 0.5 },
-      drawRectPosition: {
-        x: Dimensions.get('window').width * 0.5 - 32,
-        y: Dimensions.get('window').height * 0.5 - 32,
+  constructor(props) {
+    super(props);
+    const { navigation } = this.props
+    flagCam = navigation.getParam('flagCam', Constant.TYPE_FRONT)
+    hasBack = navigation.getParam('hasBack', true)
+    url = navigation.getParam('url', '')
+
+    this.state = {
+      flash: 'off',
+      zoom: 0,
+      autoFocus: 'on',
+      autoFocusPoint: {
+        normalized: { x: 0.5, y: 0.5 },
+        drawRectPosition: {
+          x: Dimensions.get('window').width * 0.5 - 32,
+          y: Dimensions.get('window').height * 0.5 - 32,
+        },
       },
-    },
-    depth: 0,
-    type: 'back',
-    whiteBalance: 'auto',
-    ratio: '16:9',
-  };
+      depth: 0,
+      type: 'back',
+      whiteBalance: 'auto',
+      ratio: '16:9',
+      mFlagCam: flagCam,
+      mHasBack: hasBack,
+      mUrl: url
+    };
+    console.log(this.state.flagCam);
+    console.log(this.state.mHasBack);
+    console.log(this.state.mUrl);
+  }
 
   toggleFocus() {
     this.setState({
@@ -66,9 +90,20 @@ export default class CameraScreen1 extends React.Component {
   }
 
   takePicture = async function () {
+    this.refs.loading.show();
     if (this.camera) {
-      const data = await this.camera.takePictureAsync();
-      console.warn('takePicture ', data);
+
+      options = { fixOrientation: true };
+      const data = await this.camera.takePictureAsync(options);
+      console.log(data)
+      this.refs.loading.close();
+      this.props.navigation.navigate('ConfirmInfo', {
+        filePath: data.uri,
+        typeTake: Constant.TYPE_TAKE_CAMERA,
+        flagCam: Constant.TYPE_FRONT,
+        hasBack: this.state.mHasBack,
+        url: this.state.mUrl
+      })
     }
   };
 
@@ -83,8 +118,7 @@ export default class CameraScreen1 extends React.Component {
           this.camera = ref;
         }}
         style={{
-          flex: 4,
-          marginTop: 20
+          flex: 1,
         }}
         type={this.state.type}
         flashMode={this.state.flash}
@@ -97,6 +131,8 @@ export default class CameraScreen1 extends React.Component {
         permissionDialogMessage={'We need your permission to use your camera phone'}>
 
         <View style={StyleSheet.absoluteFill}>
+          <View style={{ height: 50, backgroundColor: '#313538' }} />
+
           <View style={[styles.autoFocusBox, drawFocusRingPosition]} />
           <TouchableWithoutFeedback onPress={this.touchToFocus.bind(this)}>
             <View style={{ flex: 1 }} />
@@ -107,36 +143,38 @@ export default class CameraScreen1 extends React.Component {
   }
 
   render() {
-    return (
-      <View style={styles.container}>
-        <View style={{ flex: 1, justifyContent: 'center', backgroundColor: '#313538' }} />
-        {this.renderCamera()}
-        <View style={{ flex: 1, justifyContent: 'center', backgroundColor: '#313538' }}>
-          <TouchableOpacity
-            underlayColor='#fff'
-            onPress={this.takePicture.bind(this)}>
-            <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['#f33f5e', '#ab6f84']} style={[styles.button, styles.buttonTwo]}>
-              <Text style={styles.buttonText}>Snap</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>
+    return <View style={styles.container}>
+      {this.renderCamera()}
+      <View style={{ backgroundColor: '#313538' }}>
+        <TouchableOpacity
+          underlayColor='#fff'
+          onPress={this.takePicture.bind(this)}>
+          <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['#f33f5e', '#ab6f84']} style={[styles.button, styles.buttonTwo]}>
+            <Text style={styles.buttonText}>{this.state.mFlagCam == Constant.TYPE_FRONT ? I18n.t('title_image_front') : I18n.t('title_image_back')}</Text>
+          </LinearGradient>
+        </TouchableOpacity>
       </View>
-    )
+      <Loading ref='loading' indicatorColor='#f33f5e' backgroundColor='transparent' />
+    </View>;
   }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#313538'
   },
-  button: {
-    paddingTop: 10,
-    paddingBottom: 10,
-    borderRadius: 30,
+  flipButton: {
+    flex: 0.3,
+    height: 40,
+    marginHorizontal: 2,
+    marginBottom: 10,
     marginTop: 10,
-    marginLeft: 30,
-    marginRight: 30,
+    borderRadius: 8,
+    borderColor: 'white',
+    borderWidth: 1,
+    padding: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   autoFocusBox: {
     position: 'absolute',
@@ -147,7 +185,15 @@ const styles = StyleSheet.create({
     borderColor: 'white',
     opacity: 0.4,
   },
-  buttonText: {
+  button: {
+    paddingTop: 10,
+    paddingBottom: 10,
+    borderRadius: 30,
+    marginTop: 20,
+    marginBottom: 20,
+    marginLeft: 30,
+    marginRight: 30,
+  }, buttonText: {
     color: '#fff',
     fontSize: 20,
     textAlign: 'center',

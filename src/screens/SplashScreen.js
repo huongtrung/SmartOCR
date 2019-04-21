@@ -14,8 +14,16 @@ export default class SplashScreen extends Component {
     static navigationOptions = {
         header: null,
     };
-    state = {
-        timePassed: false,
+   
+    componentWillMount() {
+        setTimeout(() => {
+            // this.props.navigation.navigate('ChooseDocument')
+            this.props.navigation.navigate('ChooseMethod', {
+                hasBack: true,
+                image: '',
+                url: 'https://apitenten.smartocr.vn/id/v1/recognition'
+            })
+        }, 2000);
     }
     componentDidMount() {
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectionChange.bind(this));
@@ -28,12 +36,7 @@ export default class SplashScreen extends Component {
     }
 
     handleConnectionChange = (isConnected) => {
-        if (isConnected) {
-            setTimeout(() => {
-                this.props.navigation.navigate('ChooseDocument')
-            }, 2000);
-        }
-        else {
+        if (!isConnected) {
             Alert.alert(
                 I18n.t('title_not_connect'),
                 I18n.t('title_try'),
@@ -43,8 +46,6 @@ export default class SplashScreen extends Component {
             )
         }
     }
-
-
 
     render() {
         return (

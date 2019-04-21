@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Image, StyleSheet, Text, TouchableOpacity, ScrollView, BackHandler, ToastAndroid, ActivityIndicator } from 'react-native';
+import { View, Image, StyleSheet, Text, TouchableOpacity, ScrollView, BackHandler, ToastAndroid, Alert } from 'react-native';
 import Header from '../components/Header';
 import I18n, { getLanguages } from 'react-native-i18n';
 import axios from 'react-native-axios';
@@ -23,24 +23,28 @@ class ConfirmInfo extends Component {
         filePath = navigation.getParam('filePath', '')
         typeTake = navigation.getParam('typeTake', Constant.TYPE_TAKE_CAMERA)
         flagCam = navigation.getParam('flagCam', Constant.TYPE_FRONT)
+        hasBack = navigation.getParam('hasBack', true)
+        url = navigation.getParam('url', '')
 
         this.state = {
-            mFilePath: typeTake == Constant.TYPE_TAKE_CAMERA ? 'file://' + filePath : filePath.uri,
+            mFilePath: typeTake == Constant.TYPE_TAKE_CAMERA ? filePath : filePath.uri,
             mTypeTake: typeTake,
-            mFlagCam: flagCam
+            mFlagCam: flagCam,
+            mHasBack: hasBack,
+            mUrl: url
         };
-        console.log('filePath', filePath)
-    }
 
-    componentWillMount() {
-        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
-        getLanguages().then(languages => {
-            this.setState({ languages });
-        });
+        console.log(this.state.mHasBack);
+        console.log(this.state.mUrl);
+
+        console.log('filePath', filePath)
+        console.log('mTypeTake', typeTake)
+        console.log('mFlagCam', flagCam)
+        console.log('mHasBack', hasBack)
+        console.log('mUrl', url)
     }
 
     componentDidMount() {
-        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectionChange.bind(this));
         NetInfo.isConnected.fetch().done(
             (isConnected) => { this.setState({ isConnected: isConnected }); }
@@ -63,11 +67,6 @@ class ConfirmInfo extends Component {
         }
     }
 
-    handleBackButton() {
-        ToastAndroid.show('Back button is pressed', ToastAndroid.SHORT);
-        return true;
-    }
-
     static navigationOptions = {
         header: null,
     };
@@ -85,19 +84,27 @@ class ConfirmInfo extends Component {
             'Content-Type': 'multipart/form-data',
             'api-key': Constant.API_KEY
         }
-        return axios.post('http://150.95.109.122:8080/id/v1/recognition', form, { headers }).then(res => {
+        return axios.post(this.state.mUrl, form, { headers }).then(res => {
             this.refs.loading.close();
             console.log(res.data);
             console.log(res.status);
-            if (res.status == Constant.RESULT_OK && res.data.result_code == Constant.RESULT_OK) {
+            if (res.status == Constant.RESULT_OK) {
                 switch (this.state.mFlagCam) {
                     case Constant.TYPE_FRONT:
                         AsyncStorage.setItem(Constant.DATA_FRONT, JSON.stringify(res.data), () => { });
                         AsyncStorage.setItem(Constant.IMG_FRONT, this.state.mFilePath);
-                        this.setState({
-                            mFlagCam: Constant.TYPE_BACK
-                        })
-                        this.launchPickImage()
+                        if (this.state.mHasBack) {
+                            this.setState({
+                                mFlagCam: Constant.TYPE_BACK
+                            })
+                            if (this.state.mTypeTake == Constant.TYPE_TAKE_CAMERA) {
+                                this.gotoCameraScreen()
+                            } else {
+                                this.launchPickImage()
+                            }
+                        } else {
+                            this.props.navigation.navigate('InfoDocumentScreen')
+                        }
                         break;
                     case Constant.TYPE_BACK:
                         AsyncStorage.setItem(Constant.DATA_BACK, JSON.stringify(res.data), () => { });
@@ -106,13 +113,33 @@ class ConfirmInfo extends Component {
                         break;
                 }
             } else {
-
+                this.errorAlert()
             }
+
         })
             .catch(err => {
+                console.log(err);
                 this.refs.loading.close();
-                console.log(err.message);
+                this.errorAlert()
             });
+    }
+
+    errorAlert() {
+        Alert.alert(
+            I18n.t('title_error'),
+            I18n.t('title_msg'),
+            [
+                { text: 'OK', onPress: () => { } },
+            ]
+        )
+    }
+
+    gotoCameraScreen() {
+        this.props.navigation.navigate('CameraScreen', {
+            flagCam: Constant.TYPE_BACK,
+            hasBack: this.state.mHasBack,
+            url: this.state.mUrl
+        })
     }
 
     launchPickImage = () => {
@@ -138,36 +165,27 @@ class ConfirmInfo extends Component {
         });
     };
 
-    handleBackButton = () => {
-        if (this.props.isFocused) {
-            Alert.alert(
-                'Exit App',
-                'Exiting the application?',
-                [
-                    {
-                        text: 'Cancel',
-                        onPress: () => console.log('Cancel Pressed'),
-                        style: 'cancel'
-                    },
-                    {
-                        text: 'OK',
-                        onPress: () => BackHandler.exitApp()
-                    }
-                ],
-                {
-                    cancelable: false
-                }
-            );
-            return true;
+    takeAgain() {
+        switch (this.state.mTypeTake) {
+            case Constant.TYPE_TAKE_CAMERA:
+                this.props.navigation.navigate('CameraScreen', {
+                    flagCam: this.state.flagCam,
+                    hasBack: this.state.mHasBack,
+                    url: this.state.mUrl
+                })
+                break;
+            case Constant.TYPE_TAKE_GALLERY:
+                this.launchPickImage()
+                break;
         }
-    };
+    }
 
     render() {
         return (
             <ScrollView>
                 <View style={styles.container}>
                     <Header title={I18n.t('title_confirm_header')} />
-                    <Text style={styles.titleText}>{this.state.mFlagCam == Constant.TYPE_FRONT ? I18n.t('title_image_front') : I18n.t('title_image_back')}</Text>
+                    <Text style={styles.titleText}>{this.state.mFlagCam == Constant.TYPE_FRONT ? I18n.t('title_take_front') : I18n.t('title_take_back')}</Text>
                     <Image
                         source={{ uri: this.state.mFilePath }}
                         style={styles.img}
@@ -182,7 +200,7 @@ class ConfirmInfo extends Component {
 
                     <TouchableOpacity
                         underlayColor='#fff'
-                        onPress={this.launchPickImage.bind(this)}>
+                        onPress={this.takeAgain.bind(this)}>
                         <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['#f33f5e', '#ab6f84']} style={[styles.button, styles.buttonTwo]}>
                             <Text style={styles.buttonText}>
                                 {this.state.mTypeTake == Constant.TYPE_TAKE_CAMERA ? I18n.t('title_take_again') : I18n.t('title_choose_again')}</Text>
