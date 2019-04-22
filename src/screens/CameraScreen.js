@@ -12,6 +12,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import * as Constant from '../Constant';
 import Loading from 'react-native-whc-loading'
 import I18n, { getLanguages } from 'react-native-i18n';
+import ImageResizer from 'react-native-image-resizer';
 
 I18n.fallbacks = true;
 
@@ -51,9 +52,22 @@ export default class CameraScreen extends React.Component {
       mHasBack: hasBack,
       mUrl: url
     };
-    console.log(this.state.flagCam);
+    console.log(this.state.mFlagCam);
     console.log(this.state.mHasBack);
     console.log(this.state.mUrl);
+  }
+
+  componentWillMount() {
+    console.log('componentWillMount');
+  }
+
+  componentWillReceiveProps(nextProps) {
+    console.log(nextProps.navigation.state.params.flagCam);
+    this.setState({
+      mFlagCam: nextProps.navigation.state.params.flagCam,
+      mHasBack: nextProps.navigation.state.params.hasBack,
+      mUrl: nextProps.navigation.state.params.url,
+    })
   }
 
   toggleFocus() {
@@ -92,17 +106,24 @@ export default class CameraScreen extends React.Component {
   takePicture = async function () {
     this.refs.loading.show();
     if (this.camera) {
-      options = { fixOrientation: true };
+      options = { fixOrientation: true, quality: 0.5 };
       const data = await this.camera.takePictureAsync(options);
       console.log(data)
-      this.refs.loading.close();
-      this.props.navigation.navigate('ConfirmInfo', {
-        filePath: data.uri,
-        typeTake: Constant.TYPE_TAKE_CAMERA,
-        flagCam: Constant.TYPE_FRONT,
-        hasBack: this.state.mHasBack,
-        url: this.state.mUrl
-      })
+      ImageResizer.createResizedImage(data.uri, data.width, data.height, 'JPEG', 50)
+        .then(({ uri }) => {
+          console.log(uri);
+          this.refs.loading.close();
+          this.props.navigation.navigate('ConfirmInfo', {
+            filePath: uri,
+            typeTake: Constant.TYPE_TAKE_CAMERA,
+            flagCam: this.state.mFlagCam,
+            hasBack: this.state.mHasBack,
+            url: this.state.mUrl
+          })
+        })
+        .catch(err => {
+          console.log(err);
+        });
     }
   };
 
@@ -126,9 +147,12 @@ export default class CameraScreen extends React.Component {
         whiteBalance={this.state.whiteBalance}
         ratio={this.state.ratio}
         focusDepth={this.state.depth}
-        permissionDialogTitle={'Permission to use camera'}
-        permissionDialogMessage={'We need your permission to use your camera phone'}>
-
+        androidCameraPermissionOptions={{
+          title: 'Permission to use camera',
+          message: 'We need your permission to use your camera',
+          buttonPositive: 'Ok',
+          buttonNegative: 'Cancel',
+        }}>
         <View style={StyleSheet.absoluteFill}>
           <View style={{ height: 50, backgroundColor: '#313538' }} />
 

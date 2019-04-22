@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { ImageBackground, StyleSheet, View, Text, TouchableOpacity, Alert, Image } from 'react-native';
+import { ImageBackground, StyleSheet, View, Text, TouchableOpacity, Alert, Image, ToastAndroid } from 'react-native';
 import I18n, { getLanguages } from 'react-native-i18n';
 import Header from '../components/Header';
 import LinearGradient from 'react-native-linear-gradient';
+import ImageResizer from 'react-native-image-resizer';
 import * as Constant from '../Constant';
 
 var ImagePicker = require('react-native-image-picker');
@@ -35,27 +36,37 @@ class ChooseMethod extends Component {
     }
 
     launchPickImage = () => {
+        ToastAndroid.show(I18n.t('title_msg_front'), ToastAndroid.SHORT);
         var options = {
             storageOptions: {
                 skipBackup: true,
                 path: 'images',
             },
+            quality: 0.5
         };
 
         ImagePicker.launchImageLibrary(options, (response) => {
+            console.log('fileSize', response.fileSize);
+            console.log('path', response.path);
             if (response.didCancel) {
                 console.log('User cancelled image picker');
             } else if (response.error) {
                 console.log('ImagePicker Error: ', response.error);
             } else {
-                let source = response;
-                this.props.navigation.navigate('ConfirmInfo', {
-                    filePath: source,
-                    typeTake: Constant.TYPE_TAKE_GALLERY,
-                    flagCam: Constant.TYPE_FRONT,
-                    hasBack: this.state.mHasBack,
-                    url: this.state.mUrl
+                ImageResizer.createResizedImage(response.uri, response.width, response.height, 'JPEG', 50)
+                .then(({ uri }) => {
+                    console.log(uri);
+                    this.props.navigation.navigate('ConfirmInfo', {
+                        filePath: uri,
+                        typeTake: Constant.TYPE_TAKE_GALLERY,
+                        flagCam: Constant.TYPE_FRONT,
+                        hasBack: this.state.mHasBack,
+                        url: this.state.mUrl
+                    })
                 })
+                .catch(err => {
+                    console.log(err);
+                });
             }
         });
     };
@@ -68,12 +79,16 @@ class ChooseMethod extends Component {
         })
     }
 
+    onError(error) {
+        this.setState({ mImage: require('../img/image_not_found.png') })
+    }
+
     render() {
         return (
             <View style={styles.container}>
                 <Header title={I18n.t('title_method')} />
                 <ImageBackground resizeMode="cover" source={require('../img/dangky_bg.png')} style={styles.imgBackground}>
-                    <Image source={require('../img/image_not_found.png')} style={{ height: 250,width : 300 }} />
+                    <Image source={{ uri: this.state.mImage }} style={{ height: 250, width: '90%', marginLeft: 30, marginRight: 30 }} onError={(e) => { this.props.source = { uri: '../img/image_not_found.png' } }} />
                     <TouchableOpacity
                         underlayColor='#fff'
                         onPress={this.openCameraScreen.bind(this)}>

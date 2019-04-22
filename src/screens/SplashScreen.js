@@ -16,14 +16,7 @@ export default class SplashScreen extends Component {
     };
 
     componentWillMount() {
-        setTimeout(() => {
-             this.props.navigation.navigate('ChooseDocument')
-//            this.props.navigation.navigate('ChooseMethod', {
-//                hasBack: true,
-//                image: '',
-//                url: 'https://apitenten.smartocr.vn/id/v1/recognition'
-//            })
-        }, 2000);
+       
     }
     componentDidMount() {
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectionChange.bind(this));
@@ -44,6 +37,10 @@ export default class SplashScreen extends Component {
                     { text: 'OK', onPress: () => BackHandler.exitApp() },
                 ]
             )
+        }else{
+            setTimeout(() => {
+                this.props.navigation.navigate('ChooseDocument')
+            }, 2000);
         }
     }
 

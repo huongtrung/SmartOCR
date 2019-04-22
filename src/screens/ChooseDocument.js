@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView, StyleSheet, Alert, Text, Button, TouchableOpacity, BackHandler, Linking} from 'react-native'
+import { View, ScrollView, StyleSheet, Alert, Text, Button, TouchableOpacity, BackHandler, Linking } from 'react-native'
 import Header from '../components/Header';
 import I18n, { getLanguages } from 'react-native-i18n';
 import NetInfo from '@react-native-community/netinfo';
@@ -19,30 +19,19 @@ class ChooseDocument extends Component {
         super(props);
         this.state = {
             data: [],
-            webPage : '',
-            lang : ''
+            webPage: '',
+            lang: ''
         }
     }
 
     componentWillMount() {
-      getLanguages().then(languages => {
-          this.setState({
-            lang : languages[0]
-          })
-          console.log('languages[0]',this.state.lang)
-       });
-//       switch(this.state.lang.substring(0, 2)){
-//          case 'en':
-//            console.log('en')
-//            break;
-//          case 'vi':
-//             console.log('"vi"')
-//             break;
-//          case 'jp':
-//            console.log('jp')
-//            break;
-//       }
-      this.getDocumentAPI()
+        getLanguages().then(languages => {
+            this.setState({
+                lang: languages[0]
+            })
+            console.log('languages[0]', this.state.lang)
+        });
+        this.getDocumentAPI()
     }
     componentDidMount() {
         NetInfo.isConnected.addEventListener(
@@ -76,11 +65,15 @@ class ChooseDocument extends Component {
     getDocumentAPI = () => {
         axios.get('https://tenten.smartocr.vn/listDocument', { headers: { 'api-key': Constant.API_KEY } })
             .then(response => {
-                console.log('response', response.data);
-                this.setState({
-                    webPage : response.data.web_page,
-                    data: response.data.document
-                })
+                if (response.data.result_code == Constant.RESULT_OK) {
+                    console.log('response', response.data);
+                    this.setState({
+                        webPage: response.data.web_page,
+                        data: response.data.document
+                    })
+                } else {
+                    this.errorAlert()
+                }
             })
             .catch(error => {
                 this.errorAlert()
@@ -93,7 +86,7 @@ class ChooseDocument extends Component {
             I18n.t('title_error'),
             I18n.t('title_msg'),
             [
-                { text: 'OK', onPress: () => BackHandler.exitApp() },
+                { text: 'OK', onPress: () => {} },
             ]
         )
     }
@@ -126,20 +119,19 @@ class ChooseDocument extends Component {
                 onPress={() => this.chooseItemDocument(item)}
                 style={styles.button}
                 underlayColor='#fff'>
-                <Text style={styles.buttonText}>{item.name}</Text>
+                <Text style={styles.buttonText}>{this.setNameDocument(item)}</Text>
             </TouchableOpacity>
         )
     }
 
     renderItemJP = ({ item }) => {
         return (
-            <View key={item.id}>
-                <Button
-                    onPress={() => this.chooseItemDocument(item)}
-                    style={styles.button}
-                    title={item.name}
-                    color="#34aab7" />
-            </View>
+            <TouchableOpacity key={item.id}
+                onPress={() => this.chooseItemDocument(item)}
+                style={styles.buttonJP}
+                underlayColor='#fff'>
+                <Text style={styles.buttonText}>{this.setNameDocument(item)}</Text>
+            </TouchableOpacity>
         )
     }
 
@@ -152,7 +144,7 @@ class ChooseDocument extends Component {
             })
         } else {
             Alert.alert(
-                item.inactive_msg,
+                this.setErrorMsg(item),
                 '',
                 [
                     { text: 'OK', onPress: () => { } },
@@ -161,28 +153,56 @@ class ChooseDocument extends Component {
         }
     }
 
+    setNameDocument = (item) => {
+        switch (this.state.lang) {
+            case 'vi-VN':
+                console.log('vi-VN')
+                return item.name
+            case 'ja_JP':
+                console.log('ja_JP')
+                return item.name_jp
+            default:
+                console.log('default')
+                return item.name_en
+        }
+    }
+
+    setErrorMsg = (item) => {
+        switch (this.state.lang) {
+            case 'vi-VN':
+                console.log('vi-VN')
+                return item.inactive_msg
+            case 'ja_JP':
+                console.log('ja_JP')
+                return item.inactive_msg_jp
+            default:
+                console.log('default')
+                return item.inactive_msg_en
+        }
+    }
+
     render() {
         return (
-        <View style={{flex: 1}}>
-            <ScrollView>
-                <View style={styles.containerView}>
-                    <Header title={I18n.t('title_doc')} />
-                    <View style={styles.container}>
-                        <View style={styles.containerRow}>
-                            <Text style={styles.textLang}>{I18n.t('title_vn')}</Text>
-                            {this.prepDataVN().map((item) => this.renderItemVN({ item }))}
-                        </View>
-                        <View style={styles.containerRow} >
-                            <Text style={styles.textLang}>{I18n.t('title_jp')}</Text>
-                            {this.prepDataJP().map((item) => this.renderItemJP({ item }))}
+            <View style={{ flex: 1 }}>
+                <ScrollView>
+                    <View style={styles.containerView}>
+                        <Header title={I18n.t('title_doc')} />
+                        <View style={styles.container}>
+                            <View style={styles.containerRow}>
+                                <Text style={styles.textLang}>{I18n.t('title_vn')}</Text>
+                                {this.prepDataVN().map((item) => this.renderItemVN({ item }))}
+                            </View>
+                            <View style={styles.containerRow} >
+                                <Text style={styles.textLang}>{I18n.t('title_jp')}</Text>
+                                {this.prepDataJP().map((item) => this.renderItemJP({ item }))}
+                            </View>
                         </View>
                     </View>
+                </ScrollView>
+                <View style={styles.bottomView}>
+                    <Text style={styles.textInfo} onPress={() => { Linking.openURL(this.state.webPage) }}>{I18n.t('title_info')}</Text>
                 </View>
-            </ScrollView>
-             <View style={styles.bottomView}>
-                <Text style={styles.textInfo} onPress={ ()=>{ Linking.openURL(this.state.webPage)}}>{I18n.t('title_info')}</Text>
-             </View>
-        </View>
+            </View>
         );
     }
 }
@@ -216,17 +236,25 @@ const styles = StyleSheet.create({
         marginRight: 10,
         marginBottom: 10
     },
+    buttonJP: {
+        backgroundColor: '#34aab7',
+        paddingTop: 5,
+        paddingBottom: 5,
+        marginLeft: 10,
+        marginRight: 10,
+        marginBottom: 10
+    },
     buttonText: {
         color: '#fff',
         fontSize: 18,
         textAlign: 'center',
     },
-    bottomView:{
+    bottomView: {
         flex: 1,
         justifyContent: 'flex-end',
         marginBottom: 15
     },
-    textInfo:{
+    textInfo: {
         textAlign: 'center',
         fontSize: 15,
         textDecorationLine: 'underline',

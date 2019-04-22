@@ -70,6 +70,7 @@
 		C1F2BDDB8A3544C2A892EE05 /* libRNCNetInfo-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 123A1E0E84DB454BB80EAAB8 /* libRNCNetInfo-tvOS.a */; };
 		7962303738274327BDD51097 /* libRNCAsyncStorage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 31390296330449A6BE34AB00 /* libRNCAsyncStorage.a */; };
 		E15A4994265C425798AC2AF1 /* libRNCamera.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD333563AA374AAEBC99B142 /* libRNCamera.a */; };
+		99DF52B9550343F6940D0E1A /* libRCTImageResizer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F295B806169416EBBDFC920 /* libRCTImageResizer.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -417,6 +418,8 @@
 		31390296330449A6BE34AB00 /* libRNCAsyncStorage.a */ = {isa = PBXFileReference; name = "libRNCAsyncStorage.a"; path = "libRNCAsyncStorage.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 		98B26A0936D64FC0862DEC4A /* RNCamera.xcodeproj */ = {isa = PBXFileReference; name = "RNCamera.xcodeproj"; path = "../node_modules/react-native-camera/ios/RNCamera.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
 		CD333563AA374AAEBC99B142 /* libRNCamera.a */ = {isa = PBXFileReference; name = "libRNCamera.a"; path = "libRNCamera.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		FE8581F5CB25442EB3EAB4D6 /* RCTImageResizer.xcodeproj */ = {isa = PBXFileReference; name = "RCTImageResizer.xcodeproj"; path = "../node_modules/react-native-image-resizer/ios/RCTImageResizer.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		5F295B806169416EBBDFC920 /* libRCTImageResizer.a */ = {isa = PBXFileReference; name = "libRCTImageResizer.a"; path = "libRCTImageResizer.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -454,6 +457,7 @@
 				F3E2E059E5A84FF9837AC4E6 /* libRNCNetInfo.a in Frameworks */,
 				7962303738274327BDD51097 /* libRNCAsyncStorage.a in Frameworks */,
 				E15A4994265C425798AC2AF1 /* libRNCamera.a in Frameworks */,
+				99DF52B9550343F6940D0E1A /* libRCTImageResizer.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -656,6 +660,7 @@
 				7A61BC8FFF1C4D59B6BAC5DD /* RNCNetInfo.xcodeproj */,
 				5ECEFB6928484B928A8D4A2F /* RNCAsyncStorage.xcodeproj */,
 				98B26A0936D64FC0862DEC4A /* RNCamera.xcodeproj */,
+				FE8581F5CB25442EB3EAB4D6 /* RCTImageResizer.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1341,6 +1346,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1353,6 +1359,7 @@
 					"$(SRCROOT)\..\node_modules\@react-native-community\netinfo\ios",
 					"$(SRCROOT)\..\node_modules\@react-native-community\async-storage\ios",
 					"$(SRCROOT)\..\node_modules\react-native-camera\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-image-resizer\ios\RCTImageResizer",
 				);
 			};
 			name = Debug;
@@ -1387,6 +1394,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1399,6 +1407,7 @@
 					"$(SRCROOT)\..\node_modules\@react-native-community\netinfo\ios",
 					"$(SRCROOT)\..\node_modules\@react-native-community\async-storage\ios",
 					"$(SRCROOT)\..\node_modules\react-native-camera\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-image-resizer\ios\RCTImageResizer",
 				);
 			};
 			name = Release;
@@ -1430,6 +1439,7 @@
 					"$(SRCROOT)\..\node_modules\@react-native-community\netinfo\ios",
 					"$(SRCROOT)\..\node_modules\@react-native-community\async-storage\ios",
 					"$(SRCROOT)\..\node_modules\react-native-camera\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-image-resizer\ios\RCTImageResizer",
 				);
 			};
 			name = Debug;
@@ -1460,6 +1470,7 @@
 					"$(SRCROOT)\..\node_modules\@react-native-community\netinfo\ios",
 					"$(SRCROOT)\..\node_modules\@react-native-community\async-storage\ios",
 					"$(SRCROOT)\..\node_modules\react-native-camera\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-image-resizer\ios\RCTImageResizer",
 				);
 			};
 			name = Release;
@@ -1502,6 +1513,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1514,6 +1526,7 @@
 					"$(SRCROOT)\..\node_modules\@react-native-community\netinfo\ios",
 					"$(SRCROOT)\..\node_modules\@react-native-community\async-storage\ios",
 					"$(SRCROOT)\..\node_modules\react-native-camera\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-image-resizer\ios\RCTImageResizer",
 				);
 			};
 			name = Debug;
@@ -1556,6 +1569,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1568,6 +1582,7 @@
 					"$(SRCROOT)\..\node_modules\@react-native-community\netinfo\ios",
 					"$(SRCROOT)\..\node_modules\@react-native-community\async-storage\ios",
 					"$(SRCROOT)\..\node_modules\react-native-camera\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-image-resizer\ios\RCTImageResizer",
 				);
 			};
 			name = Release;
@@ -1609,6 +1624,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1621,6 +1637,7 @@
 					"$(SRCROOT)\..\node_modules\@react-native-community\netinfo\ios",
 					"$(SRCROOT)\..\node_modules\@react-native-community\async-storage\ios",
 					"$(SRCROOT)\..\node_modules\react-native-camera\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-image-resizer\ios\RCTImageResizer",
 				);
 			};
 			name = Debug;
@@ -1662,6 +1679,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1674,6 +1692,7 @@
 					"$(SRCROOT)\..\node_modules\@react-native-community\netinfo\ios",
 					"$(SRCROOT)\..\node_modules\@react-native-community\async-storage\ios",
 					"$(SRCROOT)\..\node_modules\react-native-camera\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-image-resizer\ios\RCTImageResizer",
 				);
 			};
 			name = Release;

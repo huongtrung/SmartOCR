@@ -30,6 +30,7 @@ class InfoDocumentScreen extends Component {
             mSex: '',
             mCountry: '',
             mAddress: '',
+            mTypeTake: ''
         }
     }
 
@@ -60,12 +61,7 @@ class InfoDocumentScreen extends Component {
         AsyncStorage.getItem(Constant.DATA_BACK, (err, result) => {
             try {
                 let backObj = JSON.parse(result);
-                let issueAt = backObj.issue_at
-                if (issueAt == null && issueAt == '' && issueAt.includes('N/A')) {
-                    issueAt = 'Công an Hà Nội'
-                }
                 this.setState({
-                    mCreateAt: issueAt,
                     mCreateDate: backObj.issue_date
                 })
 
@@ -124,9 +120,6 @@ class InfoDocumentScreen extends Component {
                         <TitleText title={I18n.t('title_create_date')} />
                         <ContentText text={this.state.mCreateDate} />
 
-                        <TitleText title={I18n.t('title_create_at')} />
-                        <ContentText text={this.state.mCreateAt} />
-
                         <TitleText title={I18n.t('title_birthday')} />
                         <ContentText text={this.state.mBirthday} />
 
@@ -140,9 +133,8 @@ class InfoDocumentScreen extends Component {
                             style={{ marginBottom: 20 }}
                             underlayColor='#fff'
                             onPress={this.confirmAgain.bind(this)}>
-                            <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['#f33f5e', '#ab6f84']} style={[styles.button, styles.buttonTwo]}>
-                                <Text style={styles.buttonText}>
-                                    {this.state.mTypeTake == Constant.TYPE_TAKE_CAMERA ? I18n.t('title_take_again') : I18n.t('title_choose_again')}</Text>
+                            <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['#f33f5e', '#ab6f84']} style={styles.button}>
+                                <Text style={styles.buttonText}>{I18n.t('title_take_choose')}</Text>
                             </LinearGradient>
                         </TouchableOpacity>
                     </View>
@@ -188,8 +180,6 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 20,
         textAlign: 'center',
-        paddingLeft: 100,
-        paddingRight: 100
     }
 })
 

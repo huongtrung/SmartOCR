@@ -8,6 +8,7 @@ import Loading from 'react-native-whc-loading'
 import * as Constant from '../Constant';
 import AsyncStorage from '@react-native-community/async-storage';
 import NetInfo from '@react-native-community/netinfo';
+import ImageResizer from 'react-native-image-resizer';
 
 var ImagePicker = require('react-native-image-picker');
 I18n.fallbacks = true;
@@ -27,15 +28,12 @@ class ConfirmInfo extends Component {
         url = navigation.getParam('url', '')
 
         this.state = {
-            mFilePath: typeTake == Constant.TYPE_TAKE_CAMERA ? filePath : filePath.uri,
+            mFilePath: filePath,
             mTypeTake: typeTake,
             mFlagCam: flagCam,
             mHasBack: hasBack,
             mUrl: url
         };
-
-        console.log(this.state.mHasBack);
-        console.log(this.state.mUrl);
 
         console.log('filePath', filePath)
         console.log('mTypeTake', typeTake)
@@ -89,28 +87,38 @@ class ConfirmInfo extends Component {
             console.log(res.data);
             console.log(res.status);
             if (res.status == Constant.RESULT_OK) {
-                switch (this.state.mFlagCam) {
-                    case Constant.TYPE_FRONT:
-                        AsyncStorage.setItem(Constant.DATA_FRONT, JSON.stringify(res.data), () => { });
-                        AsyncStorage.setItem(Constant.IMG_FRONT, this.state.mFilePath);
-                        if (this.state.mHasBack) {
-                            this.setState({
-                                mFlagCam: Constant.TYPE_BACK
-                            })
-                            if (this.state.mTypeTake == Constant.TYPE_TAKE_CAMERA) {
-                                this.gotoCameraScreen()
+                if (res.data.front_flg == -1) {
+                    Alert.alert(
+                        I18n.t('title_error_pick'),
+                        I18n.t('title_msg'),
+                        [
+                            { text: 'OK', onPress: () => { } },
+                        ]
+                    )
+                } else {
+                    switch (this.state.mFlagCam) {
+                        case Constant.TYPE_FRONT:
+                            AsyncStorage.setItem(Constant.DATA_FRONT, JSON.stringify(res.data), () => { });
+                            AsyncStorage.setItem(Constant.IMG_FRONT, this.state.mFilePath);
+                            if (this.state.mHasBack) {
+                                this.setState({
+                                    mFlagCam: Constant.TYPE_BACK
+                                })
+                                if (this.state.mTypeTake == Constant.TYPE_TAKE_CAMERA) {
+                                    this.gotoCameraScreen()
+                                } else {
+                                    this.launchPickImage()
+                                }
                             } else {
-                                this.launchPickImage()
+                                this.props.navigation.navigate('InfoDocumentScreen')
                             }
-                        } else {
+                            break;
+                        case Constant.TYPE_BACK:
+                            AsyncStorage.setItem(Constant.DATA_BACK, JSON.stringify(res.data), () => { });
+                            AsyncStorage.setItem(Constant.IMG_BACK, this.state.mFilePath);
                             this.props.navigation.navigate('InfoDocumentScreen')
-                        }
-                        break;
-                    case Constant.TYPE_BACK:
-                        AsyncStorage.setItem(Constant.DATA_BACK, JSON.stringify(res.data), () => { });
-                        AsyncStorage.setItem(Constant.IMG_BACK, this.state.mFilePath);
-                        this.props.navigation.navigate('InfoDocumentScreen')
-                        break;
+                            break;
+                    }
                 }
             } else {
                 this.errorAlert()
@@ -143,6 +151,11 @@ class ConfirmInfo extends Component {
     }
 
     launchPickImage = () => {
+        if (this.state.mFlagCam == Constant.TYPE_FRONT) {
+            ToastAndroid.show(I18n.t('title_msg_front'), ToastAndroid.SHORT);
+        } else {
+            ToastAndroid.show(I18n.t('title_msg_back'), ToastAndroid.SHORT);
+        }
         var options = {
             storageOptions: {
                 skipBackup: true,
@@ -156,10 +169,16 @@ class ConfirmInfo extends Component {
             } else if (response.error) {
                 console.log('ImagePicker Error: ', response.error);
             } else {
-                let source = response;
-                this.setState({
-                    mFilePath: source.uri,
-                });
+                ImageResizer.createResizedImage(response.uri, response.width, response.height, 'JPEG', 50)
+                    .then(({ uri }) => {
+                        console.log(uri);
+                        this.setState({
+                            mFilePath: uri,
+                        });
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    });
                 console.log('response', response)
             }
         });
@@ -168,8 +187,12 @@ class ConfirmInfo extends Component {
     takeAgain() {
         switch (this.state.mTypeTake) {
             case Constant.TYPE_TAKE_CAMERA:
+                console.log('this.state.flagCam', this.state.mFlagCam)
+                console.log('this.state.mHasBack', this.state.mHasBack)
+                console.log('this.state.mUrl', this.state.mUrl)
+
                 this.props.navigation.navigate('CameraScreen', {
-                    flagCam: this.state.flagCam,
+                    flagCam: this.state.mFlagCam,
                     hasBack: this.state.mHasBack,
                     url: this.state.mUrl
                 })
@@ -226,7 +249,8 @@ const styles = StyleSheet.create({
         marginRight: 15
     },
     img: {
-        height: 400,
+        width: '90%',
+        height: 450,
         margin: 20
     }, button: {
         paddingTop: 10,
