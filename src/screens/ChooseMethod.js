@@ -42,31 +42,31 @@ class ChooseMethod extends Component {
                 skipBackup: true,
                 path: 'images',
             },
-            quality: 0.5
+            noData: true
         };
 
         ImagePicker.launchImageLibrary(options, (response) => {
-            console.log('fileSize', response.fileSize);
-            console.log('path', response.path);
             if (response.didCancel) {
                 console.log('User cancelled image picker');
             } else if (response.error) {
                 console.log('ImagePicker Error: ', response.error);
             } else {
+                console.log('fileSize', response.fileSize);
+                console.log('path', response.path);
                 ImageResizer.createResizedImage(response.uri, response.width, response.height, 'JPEG', 50)
-                .then(({ uri }) => {
-                    console.log(uri);
-                    this.props.navigation.navigate('ConfirmInfo', {
-                        filePath: uri,
-                        typeTake: Constant.TYPE_TAKE_GALLERY,
-                        flagCam: Constant.TYPE_FRONT,
-                        hasBack: this.state.mHasBack,
-                        url: this.state.mUrl
+                    .then(({ uri }) => {
+                        console.log(uri);
+                        this.props.navigation.navigate('ConfirmInfo', {
+                            filePath: uri,
+                            typeTake: Constant.TYPE_TAKE_GALLERY,
+                            flagCam: Constant.TYPE_FRONT,
+                            hasBack: this.state.mHasBack,
+                            url: this.state.mUrl
+                        })
                     })
-                })
-                .catch(err => {
-                    console.log(err);
-                });
+                    .catch(err => {
+                        console.log(err);
+                    });
             }
         });
     };

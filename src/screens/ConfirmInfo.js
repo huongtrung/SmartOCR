@@ -110,7 +110,7 @@ class ConfirmInfo extends Component {
                                     this.launchPickImage()
                                 }
                             } else {
-                                this.props.navigation.navigate('InfoDocumentScreen')
+                                this.props.navigation.navigate('InfoDocumentScreen', { hasBack: this.state.mHasBack })
                             }
                             break;
                         case Constant.TYPE_BACK:
@@ -161,6 +161,7 @@ class ConfirmInfo extends Component {
                 skipBackup: true,
                 path: 'images',
             },
+            noData: true
         };
 
         ImagePicker.launchImageLibrary(options, (response) => {
@@ -169,6 +170,7 @@ class ConfirmInfo extends Component {
             } else if (response.error) {
                 console.log('ImagePicker Error: ', response.error);
             } else {
+                console.log('response', response)
                 ImageResizer.createResizedImage(response.uri, response.width, response.height, 'JPEG', 50)
                     .then(({ uri }) => {
                         console.log(uri);
@@ -179,7 +181,6 @@ class ConfirmInfo extends Component {
                     .catch(err => {
                         console.log(err);
                     });
-                console.log('response', response)
             }
         });
     };

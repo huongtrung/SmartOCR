@@ -19,6 +19,8 @@ class InfoDocumentScreen extends Component {
     };
     constructor(props) {
         super(props);
+        const { navigation } = this.props
+        hasBack = navigation.getParam('hasBack', true)
         this.state = {
             mFileFrontPath: '',
             mFileBackPath: '',
@@ -30,7 +32,7 @@ class InfoDocumentScreen extends Component {
             mSex: '',
             mCountry: '',
             mAddress: '',
-            mTypeTake: ''
+            mHasBack: hasBack
         }
     }
 
@@ -106,11 +108,13 @@ class InfoDocumentScreen extends Component {
                             source={{ uri: this.state.mFileFrontPath }}
                             style={[styles.img, styles.marginBottom]}
                             resizeMode="cover" />
-                        <Text style={styles.titleText}>{I18n.t('title_image_back')}</Text>
-                        <Image
-                            source={{ uri: this.state.mFileBackPath }}
-                            style={[styles.img, styles.marginBottom]}
-                            resizeMode="cover" />
+                        <View style={this.state.mHasBack ? {} : styles.hidden}>
+                            <Text style={styles.titleText}>{I18n.t('title_image_back')}</Text>
+                            <Image
+                                source={{ uri: this.state.mFileBackPath }}
+                                style={[styles.img, styles.marginBottom]}
+                                resizeMode="cover" />
+                        </View>
                         <TitleText title={I18n.t('title_name')} />
                         <ContentText text={this.state.mName} />
 
@@ -175,12 +179,14 @@ const styles = StyleSheet.create({
         marginLeft: 30,
         marginRight: 30,
     },
-
     buttonText: {
         color: '#fff',
         fontSize: 20,
         textAlign: 'center',
-    }
+    }, hidden: {
+        width: 0,
+        height: 0,
+    },
 })
 
 export default InfoDocumentScreen;

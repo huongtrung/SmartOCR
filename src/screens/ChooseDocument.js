@@ -5,6 +5,7 @@ import I18n, { getLanguages } from 'react-native-i18n';
 import NetInfo from '@react-native-community/netinfo';
 import axios from 'react-native-axios';
 import * as Constant from '../Constant';
+import Loading from 'react-native-whc-loading'
 I18n.fallbacks = true;
 
 I18n.translations = {
@@ -119,7 +120,7 @@ class ChooseDocument extends Component {
                 onPress={() => this.chooseItemDocument(item)}
                 style={styles.button}
                 underlayColor='#fff'>
-                <Text style={styles.buttonText}>{this.setNameDocument(item)}</Text>
+                <Text style={styles.buttonText}>{item.name}</Text>
             </TouchableOpacity>
         )
     }
@@ -130,7 +131,7 @@ class ChooseDocument extends Component {
                 onPress={() => this.chooseItemDocument(item)}
                 style={styles.buttonJP}
                 underlayColor='#fff'>
-                <Text style={styles.buttonText}>{this.setNameDocument(item)}</Text>
+                <Text style={styles.buttonText}>{item.name}</Text>
             </TouchableOpacity>
         )
     }
@@ -150,20 +151,6 @@ class ChooseDocument extends Component {
                     { text: 'OK', onPress: () => { } },
                 ]
             )
-        }
-    }
-
-    setNameDocument = (item) => {
-        switch (this.state.lang) {
-            case 'vi-VN':
-                console.log('vi-VN')
-                return item.name
-            case 'ja_JP':
-                console.log('ja_JP')
-                return item.name_jp
-            default:
-                console.log('default')
-                return item.name_en
         }
     }
 
@@ -202,6 +189,7 @@ class ChooseDocument extends Component {
                 <View style={styles.bottomView}>
                     <Text style={styles.textInfo} onPress={() => { Linking.openURL(this.state.webPage) }}>{I18n.t('title_info')}</Text>
                 </View>
+                <Loading ref='loading' indicatorColor='#f33f5e' backgroundColor='transparent' />
             </View>
         );
     }
