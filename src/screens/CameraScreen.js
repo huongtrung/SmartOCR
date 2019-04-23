@@ -10,7 +10,7 @@ import {
 import { RNCamera } from 'react-native-camera';
 import LinearGradient from 'react-native-linear-gradient';
 import * as Constant from '../Constant';
-import Loading from 'react-native-whc-loading'
+import Spinner from 'react-native-loading-spinner-overlay';
 import I18n, { getLanguages } from 'react-native-i18n';
 import ImageResizer from 'react-native-image-resizer';
 
@@ -50,7 +50,8 @@ export default class CameraScreen extends React.Component {
       ratio: '16:9',
       mFlagCam: flagCam,
       mHasBack: hasBack,
-      mUrl: url
+      mUrl: url,
+      spinner: false
     };
     console.log(this.state.mFlagCam);
     console.log(this.state.mHasBack);
@@ -104,15 +105,17 @@ export default class CameraScreen extends React.Component {
   }
 
   takePicture = async function () {
-    this.refs.loading.show();
     if (this.camera) {
       options = { fixOrientation: true, quality: 0.5 };
+      this.setState({
+        spinner: true
+      })
       const data = await this.camera.takePictureAsync(options);
-      console.log(data)
       ImageResizer.createResizedImage(data.uri, data.width, data.height, 'JPEG', 50)
         .then(({ uri }) => {
-          console.log(uri);
-          this.refs.loading.close();
+          this.setState({
+            spinner: false
+          })
           this.props.navigation.navigate('ConfirmInfo', {
             filePath: uri,
             typeTake: Constant.TYPE_TAKE_CAMERA,
@@ -177,7 +180,13 @@ export default class CameraScreen extends React.Component {
           </LinearGradient>
         </TouchableOpacity>
       </View>
-      <Loading ref='loading' indicatorColor='#f33f5e' backgroundColor='transparent' />
+      <Spinner
+        visible={this.state.spinner}
+        color="#f33f5e"
+        overlayColor="black"
+        textContent={I18n.t('title_progess_image')}
+        textStyle={styles.spinnerTextStyle}
+      />
     </View>;
   }
 }
@@ -220,5 +229,8 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 20,
     textAlign: 'center',
+  },
+  spinnerTextStyle: {
+    color: '#fff'
   },
 });

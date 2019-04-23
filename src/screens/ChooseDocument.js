@@ -5,7 +5,7 @@ import I18n, { getLanguages } from 'react-native-i18n';
 import NetInfo from '@react-native-community/netinfo';
 import axios from 'react-native-axios';
 import * as Constant from '../Constant';
-import Loading from 'react-native-whc-loading'
+import Spinner from 'react-native-loading-spinner-overlay';
 I18n.fallbacks = true;
 
 I18n.translations = {
@@ -21,7 +21,8 @@ class ChooseDocument extends Component {
         this.state = {
             data: [],
             webPage: '',
-            lang: ''
+            lang: '',
+            spinner: true
         }
     }
 
@@ -66,6 +67,9 @@ class ChooseDocument extends Component {
     getDocumentAPI = () => {
         axios.get('https://tenten.smartocr.vn/listDocument', { headers: { 'api-key': Constant.API_KEY } })
             .then(response => {
+                this.setState({
+                    spinner: false
+                })
                 if (response.data.result_code == Constant.RESULT_OK) {
                     console.log('response', response.data);
                     this.setState({
@@ -77,6 +81,9 @@ class ChooseDocument extends Component {
                 }
             })
             .catch(error => {
+                this.setState({
+                    spinner: false
+                })
                 this.errorAlert()
                 console.log('error', error);
             });
@@ -87,7 +94,7 @@ class ChooseDocument extends Component {
             I18n.t('title_error'),
             I18n.t('title_msg'),
             [
-                { text: 'OK', onPress: () => {} },
+                { text: 'OK', onPress: () => { } },
             ]
         )
     }
@@ -189,7 +196,11 @@ class ChooseDocument extends Component {
                 <View style={styles.bottomView}>
                     <Text style={styles.textInfo} onPress={() => { Linking.openURL(this.state.webPage) }}>{I18n.t('title_info')}</Text>
                 </View>
-                <Loading ref='loading' indicatorColor='#f33f5e' backgroundColor='transparent' />
+
+                <Spinner
+                    visible={this.state.spinner}
+                    color="#f33f5e"
+                />
             </View>
         );
     }
@@ -217,20 +228,22 @@ const styles = StyleSheet.create({
         marginBottom: 20
     },
     button: {
-        backgroundColor: '#f33046',
-        paddingTop: 5,
-        paddingBottom: 5,
+        backgroundColor: '#dc6c6b',
+        paddingTop: 10,
+        paddingBottom: 10,
         marginLeft: 10,
         marginRight: 10,
-        marginBottom: 10
+        borderRadius: 5,
+        marginBottom: 10,
     },
     buttonJP: {
         backgroundColor: '#34aab7',
-        paddingTop: 5,
-        paddingBottom: 5,
+        paddingTop: 10,
+        paddingBottom: 10,
         marginLeft: 10,
         marginRight: 10,
-        marginBottom: 10
+        marginBottom: 10,
+        borderRadius: 5,
     },
     buttonText: {
         color: '#fff',

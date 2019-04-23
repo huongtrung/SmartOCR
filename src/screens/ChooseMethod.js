@@ -29,7 +29,7 @@ class ChooseMethod extends Component {
             filePath: {},
             mHasBack: hasBack,
             mImage: image,
-            mUrl: url
+            mUrl: url,
         }
         console.log(this.state.mHasBack);
         console.log(this.state.mUrl);
@@ -51,11 +51,8 @@ class ChooseMethod extends Component {
             } else if (response.error) {
                 console.log('ImagePicker Error: ', response.error);
             } else {
-                console.log('fileSize', response.fileSize);
-                console.log('path', response.path);
                 ImageResizer.createResizedImage(response.uri, response.width, response.height, 'JPEG', 50)
                     .then(({ uri }) => {
-                        console.log(uri);
                         this.props.navigation.navigate('ConfirmInfo', {
                             filePath: uri,
                             typeTake: Constant.TYPE_TAKE_GALLERY,
@@ -137,14 +134,13 @@ const styles = StyleSheet.create({
         marginLeft: 30,
         marginRight: 30,
     },
-
     buttonText: {
         color: '#fff',
         fontSize: 20,
         textAlign: 'center',
         paddingLeft: 100,
         paddingRight: 100
-    }
+    },
 })
 
 export default ChooseMethod;

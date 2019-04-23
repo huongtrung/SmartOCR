@@ -9,6 +9,7 @@ import * as Constant from '../Constant';
 import AsyncStorage from '@react-native-community/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import ImageResizer from 'react-native-image-resizer';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 var ImagePicker = require('react-native-image-picker');
 I18n.fallbacks = true;
@@ -32,7 +33,8 @@ class ConfirmInfo extends Component {
             mTypeTake: typeTake,
             mFlagCam: flagCam,
             mHasBack: hasBack,
-            mUrl: url
+            mUrl: url,
+            spinner: false
         };
 
         console.log('filePath', filePath)
@@ -165,6 +167,9 @@ class ConfirmInfo extends Component {
         };
 
         ImagePicker.launchImageLibrary(options, (response) => {
+            this.setState({
+                spinner: true
+            })
             if (response.didCancel) {
                 console.log('User cancelled image picker');
             } else if (response.error) {
@@ -175,6 +180,7 @@ class ConfirmInfo extends Component {
                     .then(({ uri }) => {
                         console.log(uri);
                         this.setState({
+                            spinner: false,
                             mFilePath: uri,
                         });
                     })
@@ -231,6 +237,13 @@ class ConfirmInfo extends Component {
                         </LinearGradient>
                     </TouchableOpacity>
                     <Loading ref='loading' indicatorColor='#f33f5e' backgroundColor='transparent' />
+                    <Spinner
+                        visible={this.state.spinner}
+                        color="#f33f5e"
+                        overlayColor="black"
+                        textContent={I18n.t('title_progess_image')}
+                        textStyle={styles.spinnerTextStyle}
+                    />
                 </View>
             </ScrollView>
         );
@@ -269,6 +282,9 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 20,
         textAlign: 'center',
+    },
+    spinnerTextStyle: {
+        color: '#fff'
     },
 })
 

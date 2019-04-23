@@ -31,7 +31,8 @@
   "title_error": "Có lỗi xảy trong quá trình xử lý",
   "title_msg": "Hãy thử lại sau !",
   "title_info": "Thông tin dịch vụ",
-  "title_msg_front": "Bạn phải chọn ảnh mặt trước",
-  "title_msg_back": "Bạn phải chọn ảnh mặt sau",
-  "title_error_pick":"Bạn phải chọn đúng ảnh tài liệu"
+  "title_msg_front": "Bạn phải chọn ảnh mặt trước của tài liệu",
+  "title_msg_back": "Bạn phải chọn ảnh mặt sau của tài liệu",
+  "title_error_pick":"Bạn phải chọn đúng ảnh tài liệu",
+  "title_progess_image":"Đang xử lý ảnh ..."
 }
