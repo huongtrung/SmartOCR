@@ -15,9 +15,6 @@ export default class SplashScreen extends Component {
         header: null,
     };
 
-    componentWillMount() {
-       
-    }
     componentDidMount() {
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectionChange.bind(this));
         NetInfo.isConnected.fetch().done(

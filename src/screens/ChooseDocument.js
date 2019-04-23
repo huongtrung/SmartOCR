@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView, StyleSheet, Alert, Text, Button, TouchableOpacity, BackHandler, Linking } from 'react-native'
+import { View, ScrollView, StyleSheet, Alert, Text, TouchableOpacity, BackHandler, Linking } from 'react-native'
 import Header from '../components/Header';
 import I18n, { getLanguages } from 'react-native-i18n';
 import NetInfo from '@react-native-community/netinfo';
@@ -106,7 +106,6 @@ class ChooseDocument extends Component {
                 dataVN.push(this.state.data[i])
             }
         }
-        console.log('dataVN', dataVN)
         return dataVN
     }
 
@@ -117,7 +116,6 @@ class ChooseDocument extends Component {
                 dataJP.push(this.state.data[i])
             }
         }
-        console.log('dataJP', dataJP)
         return dataJP
     }
 
@@ -231,8 +229,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#dc6c6b',
         paddingTop: 10,
         paddingBottom: 10,
-        marginLeft: 10,
-        marginRight: 10,
+        marginLeft: 5,
+        marginRight: 5,
         borderRadius: 5,
         marginBottom: 10,
     },
@@ -240,8 +238,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#34aab7',
         paddingTop: 10,
         paddingBottom: 10,
-        marginLeft: 10,
-        marginRight: 10,
+        marginLeft: 5,
+        marginRight: 5,
         marginBottom: 10,
         borderRadius: 5,
     },

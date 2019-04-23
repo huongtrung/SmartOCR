@@ -37,13 +37,6 @@ export default class CameraScreen extends React.Component {
       flash: 'off',
       zoom: 0,
       autoFocus: 'on',
-      autoFocusPoint: {
-        normalized: { x: 0.5, y: 0.5 },
-        drawRectPosition: {
-          x: Dimensions.get('window').width * 0.5 - 32,
-          y: Dimensions.get('window').height * 0.5 - 32,
-        },
-      },
       depth: 0,
       type: 'back',
       whiteBalance: 'auto',
@@ -63,7 +56,6 @@ export default class CameraScreen extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps.navigation.state.params.flagCam);
     this.setState({
       mFlagCam: nextProps.navigation.state.params.flagCam,
       mHasBack: nextProps.navigation.state.params.hasBack,
@@ -71,46 +63,16 @@ export default class CameraScreen extends React.Component {
     })
   }
 
-  toggleFocus() {
-    this.setState({
-      autoFocus: this.state.autoFocus === 'on' ? 'off' : 'on',
-    });
-  }
-
-  touchToFocus(event) {
-    const { pageX, pageY } = event.nativeEvent;
-    const screenWidth = Dimensions.get('window').width;
-    const screenHeight = Dimensions.get('window').height;
-    const isPortrait = screenHeight > screenWidth;
-
-    let x = pageX / screenWidth;
-    let y = pageY / screenHeight;
-    if (isPortrait) {
-      x = pageY / screenHeight;
-      y = -(pageX / screenWidth) + 1;
-    }
-
-    this.setState({
-      autoFocusPoint: {
-        normalized: { x, y },
-        drawRectPosition: { x: pageX, y: pageY },
-      },
-    });
-  }
-
-  setFocusDepth(depth) {
-    this.setState({
-      depth,
-    });
-  }
-
-  takePicture = async function () {
+  takePicture = async () => {
     if (this.camera) {
-      options = { fixOrientation: true, quality: 0.5 };
+      options = {
+        fixOrientation: true, quality: 0
+      };
+
+      const data = await this.camera.takePictureAsync(options);
       this.setState({
         spinner: true
       })
-      const data = await this.camera.takePictureAsync(options);
       ImageResizer.createResizedImage(data.uri, data.width, data.height, 'JPEG', 50)
         .then(({ uri }) => {
           this.setState({
@@ -131,10 +93,6 @@ export default class CameraScreen extends React.Component {
   };
 
   renderCamera() {
-    const drawFocusRingPosition = {
-      top: this.state.autoFocusPoint.drawRectPosition.y - 32,
-      left: this.state.autoFocusPoint.drawRectPosition.x - 32,
-    };
     return (
       <RNCamera
         ref={ref => {
@@ -146,10 +104,8 @@ export default class CameraScreen extends React.Component {
         type={this.state.type}
         flashMode={this.state.flash}
         autoFocus={this.state.autoFocus}
-        autoFocusPointOfInterest={this.state.autoFocusPoint.normalized}
         whiteBalance={this.state.whiteBalance}
         ratio={this.state.ratio}
-        focusDepth={this.state.depth}
         androidCameraPermissionOptions={{
           title: 'Permission to use camera',
           message: 'We need your permission to use your camera',
@@ -158,11 +114,6 @@ export default class CameraScreen extends React.Component {
         }}>
         <View style={StyleSheet.absoluteFill}>
           <View style={{ height: 50, backgroundColor: '#313538' }} />
-
-          <View style={[styles.autoFocusBox, drawFocusRingPosition]} />
-          <TouchableWithoutFeedback onPress={this.touchToFocus.bind(this)}>
-            <View style={{ flex: 1 }} />
-          </TouchableWithoutFeedback>
         </View>
       </RNCamera>
     );
@@ -195,28 +146,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  flipButton: {
-    flex: 0.3,
-    height: 40,
-    marginHorizontal: 2,
-    marginBottom: 10,
-    marginTop: 10,
-    borderRadius: 8,
-    borderColor: 'white',
-    borderWidth: 1,
-    padding: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  autoFocusBox: {
-    position: 'absolute',
-    height: 64,
-    width: 64,
-    borderRadius: 50,
-    borderWidth: 1,
-    borderColor: 'white',
-    opacity: 0.4,
-  },
   button: {
     paddingTop: 10,
     paddingBottom: 10,
@@ -225,7 +154,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     marginLeft: 30,
     marginRight: 30,
-  }, buttonText: {
+  },
+  buttonText: {
     color: '#fff',
     fontSize: 20,
     textAlign: 'center',
