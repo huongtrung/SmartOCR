@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView, StyleSheet, Alert, Text, TouchableOpacity, BackHandler, Linking } from 'react-native'
+import { View, ScrollView, StyleSheet, Alert, Text, TouchableOpacity, Linking, BackHandler} from 'react-native'
 import Header from '../components/Header';
 import I18n, { getLanguages } from 'react-native-i18n';
 import NetInfo from '@react-native-community/netinfo';
@@ -22,7 +22,7 @@ class ChooseDocument extends Component {
             data: [],
             webPage: '',
             lang: '',
-            spinner: true
+            spinner: true,
         }
     }
 
@@ -35,6 +35,7 @@ class ChooseDocument extends Component {
         });
         this.getDocumentAPI()
     }
+
     componentDidMount() {
         NetInfo.isConnected.addEventListener(
             'connectionChange',
@@ -164,8 +165,8 @@ class ChooseDocument extends Component {
             case 'vi-VN':
                 console.log('vi-VN')
                 return item.inactive_msg
-            case 'ja_JP':
-                console.log('ja_JP')
+            case 'ja-JP':
+                console.log('ja-JP')
                 return item.inactive_msg_jp
             default:
                 console.log('default')
@@ -192,7 +193,7 @@ class ChooseDocument extends Component {
                     </View>
                 </ScrollView>
                 <View style={styles.bottomView}>
-                    <Text style={styles.textInfo} onPress={() => { Linking.openURL(this.state.webPage) }}>{I18n.t('title_info')}</Text>
+                    <Text onPress={() => { Linking.openURL(this.state.webPage) }} style={styles.textInfo}>{I18n.t('title_info')}</Text>
                 </View>
 
                 <Spinner
@@ -254,8 +255,9 @@ const styles = StyleSheet.create({
         marginBottom: 15
     },
     textInfo: {
+        width: '100%',
         textAlign: 'center',
-        fontSize: 15,
+        fontSize: 18,
         textDecorationLine: 'underline',
     }
 })

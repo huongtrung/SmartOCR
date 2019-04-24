@@ -176,7 +176,7 @@ class ConfirmInfo extends Component {
                 console.log('ImagePicker Error: ', response.error);
             } else {
                 console.log('response', response)
-                ImageResizer.createResizedImage(response.uri, response.width, response.height, 'JPEG', 50)
+                ImageResizer.createResizedImage(response.uri, 640, (640 * 4) / 3, 'JPEG', 70)
                     .then(({ uri }) => {
                         console.log(uri);
                         this.setState({
@@ -215,7 +215,7 @@ class ConfirmInfo extends Component {
             <ScrollView>
                 <View style={styles.container}>
                     <Header title={I18n.t('title_confirm_header')} />
-                    <Text style={styles.titleText}>{this.state.mFlagCam == Constant.TYPE_FRONT ? I18n.t('title_take_front') : I18n.t('title_take_back')}</Text>
+                    <Text style={styles.titleText}>{this.state.mFlagCam == Constant.TYPE_FRONT ? I18n.t('title_image_front') : I18n.t('title_image_back')}</Text>
                     <Image
                         source={{ uri: this.state.mFilePath }}
                         style={styles.img}

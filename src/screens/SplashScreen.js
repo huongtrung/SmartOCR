@@ -21,10 +21,11 @@ export default class SplashScreen extends Component {
             (isConnected) => { this.setState({ isConnected: isConnected }); }
         );
     }
+
     componentWillUnmount() {
         NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectionChange);
     }
-
+    
     handleConnectionChange = (isConnected) => {
         if (!isConnected) {
             Alert.alert(
@@ -34,7 +35,7 @@ export default class SplashScreen extends Component {
                     { text: 'OK', onPress: () => BackHandler.exitApp() },
                 ]
             )
-        }else{
+        } else {
             setTimeout(() => {
                 this.props.navigation.navigate('ChooseDocument')
             }, 2000);

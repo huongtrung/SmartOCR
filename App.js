@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { createStackNavigator, createAppContainer } from 'react-navigation';
-
 import { Provider } from "react-redux";
 import store from "./src/reducers/Store";
+import { BackHandler } from 'react-native'
 
 import SplashScreen from "./src/screens/SplashScreen";
 import InfoDocumentScreen from "./src/screens/InfoDocumentScreen";
@@ -28,10 +28,52 @@ const RootStack = createStackNavigator(
 const AppContainer = createAppContainer(RootStack);
 
 export default class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      currentScreen: ''
+    }
+  }
+
+  getActiveRouteName(navigationState) {
+    if (!navigationState) {
+      return null;
+    }
+    const route = navigationState.routes[navigationState.index];
+    if (route.routes) {
+      return getActiveRouteName(route);
+    }
+    return route.routeName;
+  }
+
+  componentDidMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
+  }
+
+  handleBackPress = () => {
+    console.log('this.state.currentScreen', this.state.currentScreen)
+    if (this.state.currentScreen == 'ChooseDocument') {
+      BackHandler.exitApp()
+      return true;
+    }
+    return false;
+  }
+
+
   render() {
     return (
       <Provider store={store}>
-        <AppContainer />
+        <AppContainer
+          onNavigationStateChange={(prevState, currentState, action) => {
+            this.setState({
+              currentScreen: this.getActiveRouteName(currentState)
+            })
+          }}
+        />
       </Provider>
     )
   }

@@ -4,8 +4,6 @@ import {
   Text,
   View,
   TouchableOpacity,
-  TouchableWithoutFeedback,
-  Dimensions,
 } from 'react-native';
 import { RNCamera } from 'react-native-camera';
 import LinearGradient from 'react-native-linear-gradient';
@@ -13,6 +11,7 @@ import * as Constant from '../Constant';
 import Spinner from 'react-native-loading-spinner-overlay';
 import I18n, { getLanguages } from 'react-native-i18n';
 import ImageResizer from 'react-native-image-resizer';
+import Permissions from 'react-native-permissions'
 
 I18n.fallbacks = true;
 
@@ -44,8 +43,9 @@ export default class CameraScreen extends React.Component {
       mFlagCam: flagCam,
       mHasBack: hasBack,
       mUrl: url,
-      spinner: false
+      spinner: false,
     };
+    this.photoQuality = 640;
     console.log(this.state.mFlagCam);
     console.log(this.state.mHasBack);
     console.log(this.state.mUrl);
@@ -66,14 +66,13 @@ export default class CameraScreen extends React.Component {
   takePicture = async () => {
     if (this.camera) {
       options = {
-        fixOrientation: true, quality: 0
+        fixOrientation: true,
       };
-
       const data = await this.camera.takePictureAsync(options);
       this.setState({
         spinner: true
       })
-      ImageResizer.createResizedImage(data.uri, data.width, data.height, 'JPEG', 50)
+      ImageResizer.createResizedImage(data.uri, this.photoQuality, (this.photoQuality * 4) / 3, 'JPEG', 70)
         .then(({ uri }) => {
           this.setState({
             spinner: false
@@ -90,7 +89,7 @@ export default class CameraScreen extends React.Component {
           console.log(err);
         });
     }
-  };
+  }
 
   renderCamera() {
     return (
@@ -105,13 +104,7 @@ export default class CameraScreen extends React.Component {
         flashMode={this.state.flash}
         autoFocus={this.state.autoFocus}
         whiteBalance={this.state.whiteBalance}
-        ratio={this.state.ratio}
-        androidCameraPermissionOptions={{
-          title: 'Permission to use camera',
-          message: 'We need your permission to use your camera',
-          buttonPositive: 'Ok',
-          buttonNegative: 'Cancel',
-        }}>
+        ratio={this.state.ratio}>
         <View style={StyleSheet.absoluteFill}>
           <View style={{ height: 50, backgroundColor: '#313538' }} />
         </View>
@@ -127,7 +120,7 @@ export default class CameraScreen extends React.Component {
           underlayColor='#fff'
           onPress={this.takePicture.bind(this)}>
           <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['#f33f5e', '#ab6f84']} style={[styles.button, styles.buttonTwo]}>
-            <Text style={styles.buttonText}>{this.state.mFlagCam == Constant.TYPE_FRONT ? I18n.t('title_image_front') : I18n.t('title_image_back')}</Text>
+            <Text style={styles.buttonText}>{this.state.mFlagCam == Constant.TYPE_FRONT ? I18n.t('title_take_front') : I18n.t('title_take_back')}</Text>
           </LinearGradient>
         </TouchableOpacity>
       </View>
@@ -141,7 +134,6 @@ export default class CameraScreen extends React.Component {
     </View>;
   }
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
