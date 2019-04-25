@@ -21,6 +21,7 @@ class InfoDocumentScreen extends Component {
         super(props);
         const { navigation } = this.props
         hasBack = navigation.getParam('hasBack', true)
+        isCam = navigation.getParam('isCam', false)
         this.state = {
             mFileFrontPath: '',
             mFileBackPath: '',
@@ -32,7 +33,12 @@ class InfoDocumentScreen extends Component {
             mSex: '',
             mCountry: '',
             mAddress: '',
-            mHasBack: hasBack
+            mHasBack: hasBack,
+            mIsCam: isCam,
+            isBackNotEmpty: false,
+            isFrontNotEmpty: false,
+            isSexEmpty: false,
+            isCreateAtEmpty: false
         }
     }
 
@@ -48,14 +54,31 @@ class InfoDocumentScreen extends Component {
         AsyncStorage.getItem(Constant.DATA_FRONT, (err, result) => {
             try {
                 let frontObj = JSON.parse(result);
-                console.log(frontObj.name);
-                this.setState({
-                    mName: frontObj.name,
-                    mID: frontObj.id,
-                    mBirthday: frontObj.birthday,
-                    mSex: frontObj.sex,
-                    mAddress: frontObj.address
-                })
+                if (frontObj != null) {
+                    console.log(frontObj.name);
+                    if (frontObj.sex === 'N/A') {
+                        console.log(frontObj.sex);
+                        this.setState({
+                            isSexEmpty: true
+                        })
+                        console.log('isSexEmpty', this.state.isSexEmpty)
+                    } else {
+                        this.setState({
+                            mSex: frontObj.sex
+                        })
+                    }
+
+                    this.setState({
+                        mName: frontObj.name,
+                        mID: frontObj.id,
+                        mBirthday: frontObj.birthday,
+                        mAddress: frontObj.address
+                    })
+                } else {
+                    this.setState({
+                        isFrontNotEmpty: true
+                    })
+                }
             } catch (ex) {
                 console.error(ex);
             }
@@ -63,10 +86,26 @@ class InfoDocumentScreen extends Component {
         AsyncStorage.getItem(Constant.DATA_BACK, (err, result) => {
             try {
                 let backObj = JSON.parse(result);
-                this.setState({
-                    mCreateDate: backObj.issue_date
-                })
-
+                if (backObj != null) {
+                    if (backObj.issue_at === 'N/A') {
+                        console.log(backObj.issue_at);
+                        this.setState({
+                            isCreateAtEmpty: true
+                        })
+                        console.log('isCreateAtEmpty', this.state.isCreateAtEmpty)
+                    } else {
+                        this.setState({
+                            mCreateAt: backObj.issue_at
+                        })
+                    }
+                    this.setState({
+                        mCreateDate: backObj.issue_date
+                    })
+                } else {
+                    this.setState({
+                        isBackNotEmpty: true
+                    })
+                }
             } catch (ex) {
                 console.error(ex);
             }
@@ -103,17 +142,17 @@ class InfoDocumentScreen extends Component {
                 <View style={styles.container}>
                     <Header title={I18n.t('title_info_header')} />
                     <View style={styles.containerDoc}>
-                        <Text style={styles.titleText}>{I18n.t('title_image_front')}</Text>
+                        <Text style={this.state.isFrontNotEmpty ? styles.hidden : styles.titleText}>{I18n.t('title_image_front')}</Text>
                         <Image
                             source={{ uri: this.state.mFileFrontPath }}
-                            style={[styles.img, styles.marginBottom]}
-                            resizeMode="cover" />
+                            style={this.state.isFrontNotEmpty ? styles.hidden : [styles.img, styles.marginBottom]}
+                            resizeMode={this.state.mIsCam ? "cover" : "contain"} />
                         <View style={this.state.mHasBack ? {} : styles.hidden}>
-                            <Text style={styles.titleText}>{I18n.t('title_image_back')}</Text>
+                            <Text style={this.state.isBackNotEmpty ? styles.hidden : styles.titleText}>{I18n.t('title_image_back')}</Text>
                             <Image
                                 source={{ uri: this.state.mFileBackPath }}
-                                style={[styles.img, styles.marginBottom]}
-                                resizeMode="cover" />
+                                style={this.state.isBackNotEmpty ? styles.hidden : [styles.img, styles.marginBottom]}
+                                resizeMode={this.state.mIsCam ? "cover" : "contain"} />
                         </View>
                         <TitleText title={I18n.t('title_name')} />
                         <ContentText text={this.state.mName} />
@@ -124,11 +163,14 @@ class InfoDocumentScreen extends Component {
                         <TitleText title={I18n.t('title_create_date')} />
                         <ContentText text={this.state.mCreateDate} />
 
+                        <TitleText title={I18n.t('title_create_at')} isHidden={this.state.isCreateAtEmpty} />
+                        <ContentText text={this.state.mCreateAt} isHidden={this.state.isCreateAtEmpty} />
+
                         <TitleText title={I18n.t('title_birthday')} />
                         <ContentText text={this.state.mBirthday} />
 
-                        <TitleText title={I18n.t('title_sex')} />
-                        <ContentText text={this.state.mSex} />
+                        <TitleText title={I18n.t('title_sex')} isHidden={this.state.isSexEmpty} />
+                        <ContentText text={this.state.mSex} isHidden={this.state.isSexEmpty} />
 
                         <TitleText title={I18n.t('title_address')} />
                         <ContentText text={this.state.mAddress} />
@@ -166,9 +208,10 @@ const styles = StyleSheet.create({
     titleText: {
         fontSize: 25,
         fontWeight: 'bold',
-        color: '#f33046',
-        marginTop: 10,
-        marginBottom: 10
+        color: "#7e7e7e",
+        textAlign: 'center',
+        marginTop: 15,
+        marginBottom: 15
     },
     button: {
         backgroundColor: '#f33046',

@@ -5,7 +5,7 @@ import Header from '../components/Header';
 import LinearGradient from 'react-native-linear-gradient';
 import ImageResizer from 'react-native-image-resizer';
 import * as Constant from '../Constant';
-import {PermissionsAndroid} from 'react-native';
+import { PermissionsAndroid } from 'react-native';
 
 var ImagePicker = require('react-native-image-picker');
 I18n.fallbacks = true;
@@ -52,9 +52,12 @@ class ChooseMethod extends Component {
             } else if (response.error) {
                 console.log('ImagePicker Error: ', response.error);
             } else {
+                console.log('response', response)
                 ImageResizer.createResizedImage(response.uri, 640, (640 * 4) / 3, 'JPEG', 70)
                     .then(({ uri }) => {
+                        console.log('mHeight', response.height)
                         this.props.navigation.navigate('ConfirmInfo', {
+                            isCam : false,
                             filePath: uri,
                             typeTake: Constant.TYPE_TAKE_GALLERY,
                             flagCam: Constant.TYPE_FRONT,
@@ -86,7 +89,7 @@ class ChooseMethod extends Component {
             <View style={styles.container}>
                 <Header title={I18n.t('title_method')} />
                 <ImageBackground resizeMode="cover" source={require('../img/dangky_bg.png')} style={styles.imgBackground}>
-                    <Image resizeMode="contain" source={{ uri: this.state.mImage, cache: 'force-cache'}} style={{ height: 250, width: '90%' }} onError={(e) => { this.props.source = { uri: '../img/image_not_found.png' } }} />
+                    <Image resizeMode="contain" source={{ uri: this.state.mImage, cache: 'force-cache' }} style={{ height: 250, width: '90%' }} onError={(e) => { this.props.source = { uri: '../img/image_not_found.png' } }} />
                     <TouchableOpacity
                         underlayColor='#fff'
                         onPress={this.openCameraScreen.bind(this)}>
@@ -139,8 +142,8 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 20,
         textAlign: 'center',
-        paddingLeft: 100,
-        paddingRight: 100
+        paddingLeft: 50,
+        paddingRight: 50
     },
 })
 

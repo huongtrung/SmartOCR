@@ -10,7 +10,6 @@ import AsyncStorage from '@react-native-community/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import ImageResizer from 'react-native-image-resizer';
 import Spinner from 'react-native-loading-spinner-overlay';
-
 var ImagePicker = require('react-native-image-picker');
 I18n.fallbacks = true;
 
@@ -22,19 +21,20 @@ class ConfirmInfo extends Component {
     constructor(props) {
         super(props);
         const { navigation } = this.props
+        isCam = navigation.getParam('isCam', false)
         filePath = navigation.getParam('filePath', '')
         typeTake = navigation.getParam('typeTake', Constant.TYPE_TAKE_CAMERA)
         flagCam = navigation.getParam('flagCam', Constant.TYPE_FRONT)
         hasBack = navigation.getParam('hasBack', true)
         url = navigation.getParam('url', '')
-
         this.state = {
             mFilePath: filePath,
             mTypeTake: typeTake,
             mFlagCam: flagCam,
             mHasBack: hasBack,
             mUrl: url,
-            spinner: false
+            spinner: false,
+            mIsCam: isCam
         };
 
         console.log('filePath', filePath)
@@ -98,10 +98,15 @@ class ConfirmInfo extends Component {
                         ]
                     )
                 } else {
+                    if (res.data.front_flg == 0) {
+                        AsyncStorage.setItem(Constant.DATA_FRONT, JSON.stringify(res.data), () => { });
+                        AsyncStorage.setItem(Constant.IMG_FRONT, this.state.mFilePath);
+                    } else if (res.data.front_flg == 1) {
+                        AsyncStorage.setItem(Constant.DATA_BACK, JSON.stringify(res.data), () => { });
+                        AsyncStorage.setItem(Constant.IMG_BACK, this.state.mFilePath);
+                    }
                     switch (this.state.mFlagCam) {
                         case Constant.TYPE_FRONT:
-                            AsyncStorage.setItem(Constant.DATA_FRONT, JSON.stringify(res.data), () => { });
-                            AsyncStorage.setItem(Constant.IMG_FRONT, this.state.mFilePath);
                             if (this.state.mHasBack) {
                                 this.setState({
                                     mFlagCam: Constant.TYPE_BACK
@@ -112,13 +117,16 @@ class ConfirmInfo extends Component {
                                     this.launchPickImage()
                                 }
                             } else {
-                                this.props.navigation.navigate('InfoDocumentScreen', { hasBack: this.state.mHasBack })
+                                this.props.navigation.navigate('InfoDocumentScreen', { 
+                                    hasBack: this.state.mHasBack,
+                                    isCam : this.state.mIsCam
+                                 })
                             }
                             break;
                         case Constant.TYPE_BACK:
-                            AsyncStorage.setItem(Constant.DATA_BACK, JSON.stringify(res.data), () => { });
-                            AsyncStorage.setItem(Constant.IMG_BACK, this.state.mFilePath);
-                            this.props.navigation.navigate('InfoDocumentScreen')
+                            this.props.navigation.navigate('InfoDocumentScreen',{
+                                isCam : this.state.mIsCam
+                            })
                             break;
                     }
                 }
@@ -167,9 +175,6 @@ class ConfirmInfo extends Component {
         };
 
         ImagePicker.launchImageLibrary(options, (response) => {
-            this.setState({
-                spinner: true
-            })
             if (response.didCancel) {
                 console.log('User cancelled image picker');
             } else if (response.error) {
@@ -215,35 +220,40 @@ class ConfirmInfo extends Component {
             <ScrollView>
                 <View style={styles.container}>
                     <Header title={I18n.t('title_confirm_header')} />
-                    <Text style={styles.titleText}>{this.state.mFlagCam == Constant.TYPE_FRONT ? I18n.t('title_image_front') : I18n.t('title_image_back')}</Text>
-                    <Image
-                        source={{ uri: this.state.mFilePath }}
-                        style={styles.img}
-                        resizeMode="cover" />
-                    <TouchableOpacity
-                        underlayColor='#fff'
-                        onPress={this.uploadImage.bind(this)}>
-                        <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['#f33f5e', '#ab6f84']} style={styles.button}>
-                            <Text style={styles.buttonText}>{I18n.t('title_confirm')}</Text>
-                        </LinearGradient>
-                    </TouchableOpacity>
+                    <View style={{
+                        marginLeft: 15,
+                        marginRight: 15,
+                    }}>
+                        <Text style={styles.titleText}>{this.state.mFlagCam == Constant.TYPE_FRONT ? I18n.t('title_image_front') : I18n.t('title_image_back')}</Text>
+                        <Image
+                            source={{ uri: this.state.mFilePath }}
+                            style={styles.img}
+                            resizeMode={this.state.mIsCam ? "cover" : "contain"} />
+                        <TouchableOpacity
+                            underlayColor='#fff'
+                            onPress={this.uploadImage.bind(this)}>
+                            <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['#f33f5e', '#ab6f84']} style={styles.button}>
+                                <Text style={styles.buttonText}>{I18n.t('title_confirm')}</Text>
+                            </LinearGradient>
+                        </TouchableOpacity>
 
-                    <TouchableOpacity
-                        underlayColor='#fff'
-                        onPress={this.takeAgain.bind(this)}>
-                        <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['#f33f5e', '#ab6f84']} style={[styles.button, styles.buttonTwo]}>
-                            <Text style={styles.buttonText}>
-                                {this.state.mTypeTake == Constant.TYPE_TAKE_CAMERA ? I18n.t('title_take_again') : I18n.t('title_choose_again')}</Text>
-                        </LinearGradient>
-                    </TouchableOpacity>
-                    <Loading ref='loading' indicatorColor='#f33f5e' backgroundColor='transparent' />
-                    <Spinner
-                        visible={this.state.spinner}
-                        color="#f33f5e"
-                        overlayColor="black"
-                        textContent={I18n.t('title_progess_image')}
-                        textStyle={styles.spinnerTextStyle}
-                    />
+                        <TouchableOpacity
+                            underlayColor='#fff'
+                            onPress={this.takeAgain.bind(this)}>
+                            <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['#f33f5e', '#ab6f84']} style={[styles.button, styles.buttonTwo]}>
+                                <Text style={styles.buttonText}>
+                                    {this.state.mTypeTake == Constant.TYPE_TAKE_CAMERA ? I18n.t('title_take_again') : I18n.t('title_choose_again')}</Text>
+                            </LinearGradient>
+                        </TouchableOpacity>
+                        <Loading ref='loading' indicatorColor='#f33f5e' backgroundColor='transparent' />
+                        <Spinner
+                            visible={this.state.spinner}
+                            color="#f33f5e"
+                            overlayColor="black"
+                            textContent={I18n.t('title_progess_image')}
+                            textStyle={styles.spinnerTextStyle}
+                        />
+                    </View>
                 </View>
             </ScrollView>
         );
@@ -258,22 +268,22 @@ const styles = StyleSheet.create({
         fontSize: 25,
         fontWeight: 'bold',
         color: '#f33046',
-        marginTop: 20,
-        marginLeft: 15,
-        marginRight: 15
+        marginTop: 5,
+        marginBottom: 5,
+
     },
     img: {
-        width: '90%',
-        height: 450,
-        margin: 20
-    }, button: {
+        width: '100%',
+        height: 430,
+    },
+    button: {
         paddingTop: 10,
         paddingBottom: 10,
         backgroundColor: '#f33046',
         borderRadius: 30,
-        marginTop: 20,
-        marginLeft: 30,
-        marginRight: 30,
+        marginTop: 10,
+        marginLeft: 70,
+        marginRight: 70,
     },
     buttonTwo: {
         marginBottom: 20

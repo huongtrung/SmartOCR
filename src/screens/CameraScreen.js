@@ -11,7 +11,6 @@ import * as Constant from '../Constant';
 import Spinner from 'react-native-loading-spinner-overlay';
 import I18n, { getLanguages } from 'react-native-i18n';
 import ImageResizer from 'react-native-image-resizer';
-import Permissions from 'react-native-permissions'
 
 I18n.fallbacks = true;
 
@@ -19,6 +18,20 @@ I18n.translations = {
   'en': require('../translation/en'),
   'ja': require('../translation/ja'),
 }
+
+const PendingView = () => (
+  <View
+    style={{
+      width: '100%',
+      flex: 1,
+      backgroundColor: '#313538',
+      justifyContent: 'center',
+      alignItems: 'center',
+    }}>
+    <Text style={styles.buttonText}>{I18n.t('title_not_auth')}</Text>
+  </View>
+);
+
 
 export default class CameraScreen extends React.Component {
   static navigationOptions = {
@@ -67,8 +80,10 @@ export default class CameraScreen extends React.Component {
     if (this.camera) {
       options = {
         fixOrientation: true,
+        orientation: 'portrait'
       };
       const data = await this.camera.takePictureAsync(options);
+      console.log(data)
       this.setState({
         spinner: true
       })
@@ -78,6 +93,7 @@ export default class CameraScreen extends React.Component {
             spinner: false
           })
           this.props.navigation.navigate('ConfirmInfo', {
+            isCam : true,
             filePath: uri,
             typeTake: Constant.TYPE_TAKE_CAMERA,
             flagCam: this.state.mFlagCam,
@@ -97,17 +113,50 @@ export default class CameraScreen extends React.Component {
         ref={ref => {
           this.camera = ref;
         }}
-        style={{
-          flex: 1,
-        }}
+        onCameraReady={
+          console.log('onCameraReady')
+        }
+        style={styles.preview}
         type={this.state.type}
         flashMode={this.state.flash}
         autoFocus={this.state.autoFocus}
         whiteBalance={this.state.whiteBalance}
-        ratio={this.state.ratio}>
-        <View style={StyleSheet.absoluteFill}>
-          <View style={{ height: 50, backgroundColor: '#313538' }} />
-        </View>
+        ratio={this.state.ratio}
+        androidCameraPermissionOptions={{
+          title: 'Permission to use camera',
+          message: 'We need your permission to use your camera',
+          buttonPositive: 'Ok',
+          buttonNegative: 'Cancel',
+        }}>
+        {({ camera, status, recordAudioPermissionStatus }) => {
+          if (status !== 'READY') return <PendingView />;
+          return (
+            <View style={{
+              flex: 1,
+              alignItems: 'flex-start',
+              justifyContent: 'flex-start',
+            }}>
+              <View style={{ backgroundColor: '#313538', width: '100%', height: 50 }} />
+              <View style={{
+                width: '100%',
+                backgroundColor: '#313538',
+                justifyContent: 'center',
+                alignItems: 'center',
+                position: 'absolute',
+                bottom: 0
+              }}>
+                <TouchableOpacity
+                  underlayColor='#fff'
+                  onPress={this.takePicture.bind(this)}>
+                  <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['#f33f5e', '#ab6f84']} style={[styles.button, styles.buttonTwo]}>
+                    <Text style={styles.buttonText}>{this.state.mFlagCam == Constant.TYPE_FRONT ? I18n.t('title_take_front') : I18n.t('title_take_back')}</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              </View>
+
+            </View>
+          );
+        }}
       </RNCamera>
     );
   }
@@ -115,15 +164,6 @@ export default class CameraScreen extends React.Component {
   render() {
     return <View style={styles.container}>
       {this.renderCamera()}
-      <View style={{ backgroundColor: '#313538' }}>
-        <TouchableOpacity
-          underlayColor='#fff'
-          onPress={this.takePicture.bind(this)}>
-          <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['#f33f5e', '#ab6f84']} style={[styles.button, styles.buttonTwo]}>
-            <Text style={styles.buttonText}>{this.state.mFlagCam == Constant.TYPE_FRONT ? I18n.t('title_take_front') : I18n.t('title_take_back')}</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </View>
       <Spinner
         visible={this.state.spinner}
         color="#f33f5e"
@@ -132,10 +172,14 @@ export default class CameraScreen extends React.Component {
         textStyle={styles.spinnerTextStyle}
       />
     </View>;
+
   }
 }
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  preview: {
     flex: 1,
   },
   button: {
@@ -144,8 +188,8 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     marginTop: 20,
     marginBottom: 20,
-    marginLeft: 30,
-    marginRight: 30,
+    paddingLeft: 40,
+    paddingRight: 40
   },
   buttonText: {
     color: '#fff',
@@ -155,4 +199,5 @@ const styles = StyleSheet.create({
   spinnerTextStyle: {
     color: '#fff'
   },
+
 });

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ImageBackground, StyleSheet, Alert, BackHandler } from 'react-native';
+import { ImageBackground, StyleSheet, Alert, BackHandler ,Image} from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import I18n, { getLanguages } from 'react-native-i18n';
 
@@ -44,7 +44,9 @@ export default class SplashScreen extends Component {
 
     render() {
         return (
-            <ImageBackground resizeMode="stretch" source={require('../img/splash_v2.png')} style={styles.imgBackground} />
+            <ImageBackground source={require('../img/splash_v2.png')} style={styles.imgBackground}>
+                <Image style={{width : 100 , height :50}} source={require('../img/logo_smart.png')}/>
+            </ImageBackground>
         );
 
     }
@@ -53,5 +55,6 @@ export default class SplashScreen extends Component {
 const styles = StyleSheet.create({
     imgBackground: {
         flex: 1,
+        justifyContent: 'center',
     },
 })
