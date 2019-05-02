@@ -117,15 +117,15 @@ class ConfirmInfo extends Component {
                                     this.launchPickImage()
                                 }
                             } else {
-                                this.props.navigation.navigate('InfoDocumentScreen', { 
+                                this.props.navigation.navigate('InfoDocumentScreen', {
                                     hasBack: this.state.mHasBack,
-                                    isCam : this.state.mIsCam
-                                 })
+                                    isCam: this.state.mIsCam
+                                })
                             }
                             break;
                         case Constant.TYPE_BACK:
-                            this.props.navigation.navigate('InfoDocumentScreen',{
-                                isCam : this.state.mIsCam
+                            this.props.navigation.navigate('InfoDocumentScreen', {
+                                isCam: this.state.mIsCam
                             })
                             break;
                     }
@@ -217,7 +217,7 @@ class ConfirmInfo extends Component {
 
     render() {
         return (
-            <ScrollView>
+            <View style={styles.container}>
                 <View style={styles.container}>
                     <Header title={I18n.t('title_confirm_header')} />
                     <View style={{
@@ -228,34 +228,37 @@ class ConfirmInfo extends Component {
                         <Image
                             source={{ uri: this.state.mFilePath }}
                             style={styles.img}
-                            resizeMode={this.state.mIsCam ? "cover" : "contain"} />
-                        <TouchableOpacity
-                            underlayColor='#fff'
-                            onPress={this.uploadImage.bind(this)}>
-                            <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['#f33f5e', '#ab6f84']} style={styles.button}>
-                                <Text style={styles.buttonText}>{I18n.t('title_confirm')}</Text>
-                            </LinearGradient>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            underlayColor='#fff'
-                            onPress={this.takeAgain.bind(this)}>
-                            <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['#f33f5e', '#ab6f84']} style={[styles.button, styles.buttonTwo]}>
-                                <Text style={styles.buttonText}>
-                                    {this.state.mTypeTake == Constant.TYPE_TAKE_CAMERA ? I18n.t('title_take_again') : I18n.t('title_choose_again')}</Text>
-                            </LinearGradient>
-                        </TouchableOpacity>
-                        <Loading ref='loading' indicatorColor='#f33f5e' backgroundColor='transparent' />
-                        <Spinner
-                            visible={this.state.spinner}
-                            color="#f33f5e"
-                            overlayColor="black"
-                            textContent={I18n.t('title_progess_image')}
-                            textStyle={styles.spinnerTextStyle}
-                        />
+                            resizeMode="contain"
+                         />
                     </View>
                 </View>
-            </ScrollView>
+                <View style={styles.bottomView}>
+                    <TouchableOpacity
+                        underlayColor='#fff'
+                        onPress={this.uploadImage.bind(this)}>
+                        <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['#f33f5e', '#ab6f84']} style={styles.button}>
+                            <Text style={styles.buttonText}>{I18n.t('title_confirm')}</Text>
+                        </LinearGradient>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        underlayColor='#fff'
+                        onPress={this.takeAgain.bind(this)}>
+                        <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['#f33f5e', '#ab6f84']} style={[styles.button, styles.buttonTwo]}>
+                            <Text style={styles.buttonText}>
+                                {this.state.mTypeTake == Constant.TYPE_TAKE_CAMERA ? I18n.t('title_take_again') : I18n.t('title_choose_again')}</Text>
+                        </LinearGradient>
+                    </TouchableOpacity>
+                </View>
+                <Loading ref='loading' indicatorColor='#f33f5e' backgroundColor='transparent' />
+                <Spinner
+                    visible={this.state.spinner}
+                    color="#f33f5e"
+                    overlayColor="black"
+                    textContent={I18n.t('title_progess_image')}
+                    textStyle={styles.spinnerTextStyle}
+                />
+            </View>
         );
     }
 }
@@ -270,11 +273,12 @@ const styles = StyleSheet.create({
         color: '#f33046',
         marginTop: 5,
         marginBottom: 5,
-
     },
     img: {
         width: '100%',
-        height: 430,
+        height: '100%',
+        overflow: 'hidden',
+        position: 'relative',
     },
     button: {
         paddingTop: 10,
@@ -295,6 +299,11 @@ const styles = StyleSheet.create({
     },
     spinnerTextStyle: {
         color: '#fff'
+    },
+    bottomView: {
+        flex: 1,
+        justifyContent: 'flex-end',
+        marginBottom: 15
     },
 })
 

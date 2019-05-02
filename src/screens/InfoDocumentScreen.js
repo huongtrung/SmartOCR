@@ -146,13 +146,13 @@ class InfoDocumentScreen extends Component {
                         <Image
                             source={{ uri: this.state.mFileFrontPath }}
                             style={this.state.isFrontNotEmpty ? styles.hidden : [styles.img, styles.marginBottom]}
-                            resizeMode={this.state.mIsCam ? "cover" : "contain"} />
+                            resizeMode={this.state.mIsCam ? "contain" : "contain"} />
                         <View style={this.state.mHasBack ? {} : styles.hidden}>
                             <Text style={this.state.isBackNotEmpty ? styles.hidden : styles.titleText}>{I18n.t('title_image_back')}</Text>
                             <Image
                                 source={{ uri: this.state.mFileBackPath }}
                                 style={this.state.isBackNotEmpty ? styles.hidden : [styles.img, styles.marginBottom]}
-                                resizeMode={this.state.mIsCam ? "cover" : "contain"} />
+                                resizeMode={this.state.mIsCam ? "contain" : "contain"} />
                         </View>
                         <TitleText title={I18n.t('title_name')} />
                         <ContentText text={this.state.mName} />
