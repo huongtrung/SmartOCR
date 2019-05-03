@@ -35,5 +35,7 @@
   "title_msg_back": "裏を取ってください。",
   "title_error_pick":"正しい書類の種類を選択してください。",
   "title_progess_image":"処理中…",
-  "title_not_auth":"カメラへアクセス許可がありません。やり直してください。"
+  "title_not_auth":"カメラへアクセス許可がありません。やり直してください。",
+  "title_msg_take_front": "表面の写真を撮影又は選択してください。",
+  "title_msg_take_back": "裏面の写真を撮影又は選択してください。"
 }

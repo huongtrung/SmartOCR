@@ -4,7 +4,6 @@ import Header from '../components/Header';
 import I18n, { getLanguages } from 'react-native-i18n';
 import axios from 'react-native-axios';
 import LinearGradient from 'react-native-linear-gradient';
-import Loading from 'react-native-whc-loading'
 import * as Constant from '../Constant';
 import AsyncStorage from '@react-native-community/async-storage';
 import NetInfo from '@react-native-community/netinfo';
@@ -34,21 +33,16 @@ class ConfirmInfo extends Component {
             mHasBack: hasBack,
             mUrl: url,
             spinner: false,
-            mIsCam: isCam
+            mIsCam: isCam,
+            isConnected : true
         };
-
-        console.log('filePath', filePath)
-        console.log('mTypeTake', typeTake)
-        console.log('mFlagCam', flagCam)
-        console.log('mHasBack', hasBack)
-        console.log('mUrl', url)
     }
 
     componentDidMount() {
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectionChange.bind(this));
-        NetInfo.isConnected.fetch().done(
-            (isConnected) => { this.setState({ isConnected: isConnected }); }
-        );
+        NetInfo.isConnected.fetch().done(isConnected => {
+            this.setState({ isConnected });
+        });
     }
 
     componentWillUnmount() {
@@ -57,22 +51,37 @@ class ConfirmInfo extends Component {
 
     handleConnectionChange = (isConnected) => {
         if (!isConnected) {
-            Alert.alert(
-                I18n.t('title_not_connect'),
-                I18n.t('title_try'),
-                [
-                    { text: 'OK', onPress: () => BackHandler.exitApp() },
-                ]
-            )
+           this.showMsgNotConnect()
         }
+    }
+
+    showMsgNotConnect() {
+        Alert.alert(
+            I18n.t('title_not_connect'),
+            I18n.t('title_try'),
+            [
+                { text: 'OK', onPress: () => {} },
+            ]
+        )
     }
 
     static navigationOptions = {
         header: null,
     };
 
+    checkNetwork(){
+        console.log(this.state.isConnected)
+        if(this.state.isConnected){
+            this.uploadImage()
+        }else{
+            this.showMsgNotConnect()
+        }
+    }
+
     uploadImage = () => {
-        this.refs.loading.show();
+        this.setState({
+            spinner: true
+        });
         const form = new FormData()
         form.append('image', {
             name: 'image',
@@ -85,7 +94,9 @@ class ConfirmInfo extends Component {
             'api-key': Constant.API_KEY
         }
         return axios.post(this.state.mUrl, form, { headers }).then(res => {
-            this.refs.loading.close();
+            this.setState({
+                spinner: false
+            });
             console.log(res.data);
             console.log(res.status);
             if (res.status == Constant.RESULT_OK) {
@@ -114,7 +125,7 @@ class ConfirmInfo extends Component {
                                 if (this.state.mTypeTake == Constant.TYPE_TAKE_CAMERA) {
                                     this.gotoCameraScreen()
                                 } else {
-                                    this.launchPickImage()
+                                    this.openPickImage()
                                 }
                             } else {
                                 this.props.navigation.navigate('InfoDocumentScreen', {
@@ -137,7 +148,9 @@ class ConfirmInfo extends Component {
         })
             .catch(err => {
                 console.log(err);
-                this.refs.loading.close();
+                this.setState({
+                    spinner: false
+                });
                 this.errorAlert()
             });
     }
@@ -153,19 +166,60 @@ class ConfirmInfo extends Component {
     }
 
     gotoCameraScreen() {
-        this.props.navigation.navigate('CameraScreen', {
-            flagCam: Constant.TYPE_BACK,
-            hasBack: this.state.mHasBack,
-            url: this.state.mUrl
-        })
+        Alert.alert(
+            I18n.t('title_msg_take_back'),
+            '',
+            [
+                {
+                    text: 'OK', onPress: () => {
+                        this.props.navigation.navigate('CameraScreen', {
+                            flagCam: Constant.TYPE_BACK,
+                            hasBack: this.state.mHasBack,
+                            url: this.state.mUrl
+                        })
+                    }
+                },
+            ]
+        )
+    }
+
+    openPickImage() {
+        var msg = '';
+        if (this.state.mTypeTake == Constant.TYPE_TAKE_CAMERA) {
+            if (this.state.mFlagCam == Constant.TYPE_FRONT) {
+                msg = I18n.t('title_msg_take_front')
+            } else {
+                msg = I18n.t('title_msg_take_back')
+            }
+        } else {
+            if (this.state.mFlagCam == Constant.TYPE_FRONT) {
+                msg = I18n.t('title_msg_front')
+            } else {
+                msg = I18n.t('title_msg_back')
+            }
+        }
+        Alert.alert(
+            msg,
+            '',
+            [
+                {
+                    text: 'OK', onPress: () => {
+                        if (this.state.mTypeTake == Constant.TYPE_TAKE_CAMERA) {
+                            this.props.navigation.navigate('CameraScreen', {
+                                flagCam: this.state.mFlagCam,
+                                hasBack: this.state.mHasBack,
+                                url: this.state.mUrl
+                            })
+                        } else {
+                            this.launchPickImage()
+                        }
+                    }
+                },
+            ]
+        )
     }
 
     launchPickImage = () => {
-        if (this.state.mFlagCam == Constant.TYPE_FRONT) {
-            ToastAndroid.show(I18n.t('title_msg_front'), ToastAndroid.SHORT);
-        } else {
-            ToastAndroid.show(I18n.t('title_msg_back'), ToastAndroid.SHORT);
-        }
         var options = {
             storageOptions: {
                 skipBackup: true,
@@ -185,7 +239,6 @@ class ConfirmInfo extends Component {
                     .then(({ uri }) => {
                         console.log(uri);
                         this.setState({
-                            spinner: false,
                             mFilePath: uri,
                         });
                     })
@@ -197,22 +250,7 @@ class ConfirmInfo extends Component {
     };
 
     takeAgain() {
-        switch (this.state.mTypeTake) {
-            case Constant.TYPE_TAKE_CAMERA:
-                console.log('this.state.flagCam', this.state.mFlagCam)
-                console.log('this.state.mHasBack', this.state.mHasBack)
-                console.log('this.state.mUrl', this.state.mUrl)
-
-                this.props.navigation.navigate('CameraScreen', {
-                    flagCam: this.state.mFlagCam,
-                    hasBack: this.state.mHasBack,
-                    url: this.state.mUrl
-                })
-                break;
-            case Constant.TYPE_TAKE_GALLERY:
-                this.launchPickImage()
-                break;
-        }
+        this.openPickImage()
     }
 
     render() {
@@ -229,13 +267,13 @@ class ConfirmInfo extends Component {
                             source={{ uri: this.state.mFilePath }}
                             style={styles.img}
                             resizeMode="contain"
-                         />
+                        />
                     </View>
                 </View>
                 <View style={styles.bottomView}>
                     <TouchableOpacity
                         underlayColor='#fff'
-                        onPress={this.uploadImage.bind(this)}>
+                        onPress={this.checkNetwork.bind(this)}>
                         <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['#f33f5e', '#ab6f84']} style={styles.button}>
                             <Text style={styles.buttonText}>{I18n.t('title_confirm')}</Text>
                         </LinearGradient>
@@ -250,13 +288,9 @@ class ConfirmInfo extends Component {
                         </LinearGradient>
                     </TouchableOpacity>
                 </View>
-                <Loading ref='loading' indicatorColor='#f33f5e' backgroundColor='transparent' />
                 <Spinner
                     visible={this.state.spinner}
                     color="#f33f5e"
-                    overlayColor="black"
-                    textContent={I18n.t('title_progess_image')}
-                    textStyle={styles.spinnerTextStyle}
                 />
             </View>
         );

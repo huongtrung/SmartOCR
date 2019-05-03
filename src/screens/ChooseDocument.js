@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView, StyleSheet, Alert, Text, TouchableOpacity, Linking, BackHandler} from 'react-native'
+import { View, ScrollView, StyleSheet, Alert, Text, TouchableOpacity, Linking, BackHandler } from 'react-native'
 import Header from '../components/Header';
 import I18n, { getLanguages } from 'react-native-i18n';
 import NetInfo from '@react-native-community/netinfo';
@@ -23,6 +23,7 @@ class ChooseDocument extends Component {
             webPage: '',
             lang: '',
             spinner: true,
+            isConnected: true
         }
     }
 
@@ -55,39 +56,47 @@ class ChooseDocument extends Component {
 
     _handleConnectivityChange = isConnected => {
         if (!isConnected) {
-            Alert.alert(
-                I18n.t('title_not_connect'),
-                I18n.t('title_try'),
-                [
-                    { text: 'OK', onPress: () => BackHandler.exitApp() },
-                ]
-            )
+            this.showMsgNotConnect()
         }
     };
 
+    showMsgNotConnect() {
+        Alert.alert(
+            I18n.t('title_not_connect'),
+            I18n.t('title_try'),
+            [
+                { text: 'OK', onPress: () => { } },
+            ]
+        )
+    }
+
     getDocumentAPI = () => {
-        axios.get('https://tenten.smartocr.vn/listDocument', { headers: { 'api-key': Constant.API_KEY } })
-            .then(response => {
-                this.setState({
-                    spinner: false
-                })
-                if (response.data.result_code == Constant.RESULT_OK) {
-                    console.log('response', response.data);
+        if (this.state.isConnected) {
+            axios.get('https://tenten.smartocr.vn/listDocument', { headers: { 'api-key': Constant.API_KEY } })
+                .then(response => {
                     this.setState({
-                        webPage: response.data.web_page,
-                        data: response.data.document
+                        spinner: false
                     })
-                } else {
-                    this.errorAlert()
-                }
-            })
-            .catch(error => {
-                this.setState({
-                    spinner: false
+                    if (response.data.result_code == Constant.RESULT_OK) {
+                        console.log('response', response.data);
+                        this.setState({
+                            webPage: response.data.web_page,
+                            data: response.data.document
+                        })
+                    } else {
+                        this.errorAlert()
+                    }
                 })
-                this.errorAlert()
-                console.log('error', error);
-            });
+                .catch(error => {
+                    this.setState({
+                        spinner: false
+                    })
+                    this.errorAlert()
+                    console.log('error', error);
+                });
+        } else {
+            this.showMsgNotConnect()
+        }
     }
 
     errorAlert() {

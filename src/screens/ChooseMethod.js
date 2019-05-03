@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import { ImageBackground, StyleSheet, View, Text, TouchableOpacity, Alert, Image, ToastAndroid } from 'react-native';
+import { ImageBackground, StyleSheet, View, Text, TouchableOpacity, Alert, Image} from 'react-native';
 import I18n, { getLanguages } from 'react-native-i18n';
 import Header from '../components/Header';
 import LinearGradient from 'react-native-linear-gradient';
 import ImageResizer from 'react-native-image-resizer';
 import * as Constant from '../Constant';
-import { PermissionsAndroid } from 'react-native';
 
 var ImagePicker = require('react-native-image-picker');
 I18n.fallbacks = true;
@@ -37,7 +36,6 @@ class ChooseMethod extends Component {
     }
 
     launchPickImage = () => {
-        ToastAndroid.show(I18n.t('title_msg_front'), ToastAndroid.SHORT);
         var options = {
             storageOptions: {
                 skipBackup: true,
@@ -57,7 +55,7 @@ class ChooseMethod extends Component {
                     .then(({ uri }) => {
                         console.log('mHeight', response.height)
                         this.props.navigation.navigate('ConfirmInfo', {
-                            isCam : false,
+                            isCam: false,
                             filePath: uri,
                             typeTake: Constant.TYPE_TAKE_GALLERY,
                             flagCam: Constant.TYPE_FRONT,
@@ -72,12 +70,36 @@ class ChooseMethod extends Component {
         });
     }
 
+    openPickImage() {
+        Alert.alert(
+            I18n.t('title_msg_front'),
+            '',
+            [
+                {
+                    text: 'OK', onPress: () => {
+                        this.launchPickImage()
+                    }
+                },
+            ]
+        )
+    }
+
     openCameraScreen = () => {
-        this.props.navigation.navigate('CameraScreen', {
-            flagCam: Constant.TYPE_FRONT,
-            hasBack: this.state.mHasBack,
-            url: this.state.mUrl
-        })
+        Alert.alert(
+            I18n.t('title_msg_take_front'),
+            '',
+            [
+                {
+                    text: 'OK', onPress: () => {
+                        this.props.navigation.navigate('CameraScreen', {
+                            flagCam: Constant.TYPE_FRONT,
+                            hasBack: this.state.mHasBack,
+                            url: this.state.mUrl
+                        })
+                    }
+                },
+            ]
+        )
     }
 
     onError(error) {
@@ -99,7 +121,7 @@ class ChooseMethod extends Component {
                     </TouchableOpacity>
                     <TouchableOpacity
                         underlayColor='#fff'
-                        onPress={this.launchPickImage.bind(this)}>
+                        onPress={this.openPickImage.bind(this)}>
                         <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['#f33f5e', '#ab6f84']} style={styles.button}>
                             <Text style={styles.buttonText}>{I18n.t('method_choose')}</Text>
                         </LinearGradient>
