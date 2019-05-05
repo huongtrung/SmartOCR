@@ -23,6 +23,7 @@ class ChooseDocument extends Component {
             webPage: '',
             lang: '',
             spinner: false,
+            mIsNotConnected: false
         }
     }
 
@@ -37,9 +38,7 @@ class ChooseDocument extends Component {
 
     componentDidMount() {
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectionChange.bind(this));
-        NetInfo.isConnected.fetch().done(
-            (isConnected) => { this.setState({ isConnected: isConnected }); }
-        );
+        this.getDocumentAPI()
     }
 
     componentWillUnmount() {
@@ -48,44 +47,51 @@ class ChooseDocument extends Component {
 
     handleConnectionChange = (isConnected) => {
         if (!isConnected) {
+            this.setState({
+                mIsNotConnected: true
+            })
             Alert.alert(
                 I18n.t('title_not_connect'),
                 I18n.t('title_try'),
                 [
-                    { text: 'OK', onPress: () => BackHandler.exitApp() },
+                    { text: 'OK', onPress: () => { } },
                 ]
             )
         } else {
-            this.getDocumentAPI()
+            this.setState({
+                mIsNotConnected: false
+            })
         }
     }
 
     getDocumentAPI = () => {
-        this.setState({
-            spinner: true
-        })
-        axios.get('https://tenten.smartocr.vn/listDocument', { headers: { 'api-key': Constant.API_KEY } })
-            .then(response => {
-                this.setState({
-                    spinner: false
-                })
-                if (response.data.result_code == Constant.RESULT_OK) {
-                    console.log('response', response.data);
-                    this.setState({
-                        webPage: response.data.web_page,
-                        data: response.data.document
-                    })
-                } else {
-                    this.errorAlert()
-                }
+        if (!this.state.mIsNotConnected) {
+            this.setState({
+                spinner: true
             })
-            .catch(error => {
-                this.setState({
-                    spinner: false
+            axios.get('https://tenten.smartocr.vn/listDocument', { headers: { 'api-key': Constant.API_KEY } })
+                .then(response => {
+                    this.setState({
+                        spinner: false
+                    })
+                    if (response.data.result_code == Constant.RESULT_OK) {
+                        console.log('response', response.data);
+                        this.setState({
+                            webPage: response.data.web_page,
+                            data: response.data.document
+                        })
+                    } else {
+                        this.errorAlert()
+                    }
                 })
-                this.errorAlert()
-                console.log('error', error);
-            });
+                .catch(error => {
+                    this.setState({
+                        spinner: false
+                    })
+                    this.errorAlert()
+                    console.log('error', error);
+                });
+        }
     }
 
     errorAlert() {
@@ -179,11 +185,11 @@ class ChooseDocument extends Component {
                     <View style={styles.containerView}>
                         <Header title={I18n.t('title_doc')} />
                         <View style={styles.container}>
-                            <View style={styles.containerRow}>
+                            <View style={this.state.mIsNotConnected ? styles.hidden : styles.containerRow}>
                                 <Text style={styles.textLang}>{I18n.t('title_vn')}</Text>
                                 {this.prepDataVN().map((item) => this.renderItemVN({ item }))}
                             </View>
-                            <View style={styles.containerRow} >
+                            <View style={this.state.mIsNotConnected ? styles.hidden : styles.containerRow} >
                                 <Text style={styles.textLang}>{I18n.t('title_jp')}</Text>
                                 {this.prepDataJP().map((item) => this.renderItemJP({ item }))}
                             </View>
@@ -257,5 +263,8 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 18,
         textDecorationLine: 'underline',
-    }
+    }, hidden: {
+        width: 0,
+        height: 0,
+    },
 })

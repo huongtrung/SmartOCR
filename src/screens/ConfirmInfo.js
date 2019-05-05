@@ -40,9 +40,6 @@ class ConfirmInfo extends Component {
 
     componentDidMount() {
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectionChange.bind(this));
-        NetInfo.isConnected.fetch().done(isConnected => {
-            console.log(isConnected)
-        });
     }
 
     componentWillUnmount() {
@@ -60,7 +57,7 @@ class ConfirmInfo extends Component {
             I18n.t('title_not_connect'),
             I18n.t('title_try'),
             [
-                { text: 'OK', onPress: () => { } },
+                { text: 'OK', onPress: () => { console.log('OK Pressed') } },
             ]
         )
     }
@@ -212,7 +209,7 @@ class ConfirmInfo extends Component {
                             })
                         } else {
                             this.setState({
-                                mFilePath : ''
+                                mFilePath: ''
                             })
                             this.launchPickImage()
                         }
