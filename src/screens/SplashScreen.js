@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { ImageBackground, StyleSheet, Alert, BackHandler, Image } from 'react-native';
-import NetInfo from '@react-native-community/netinfo';
 import I18n, { getLanguages } from 'react-native-i18n';
 
 I18n.fallbacks = true;
@@ -16,30 +15,9 @@ export default class SplashScreen extends Component {
     };
 
     componentDidMount() {
-        NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectionChange.bind(this));
-        NetInfo.isConnected.fetch().done(
-            (isConnected) => { this.setState({ isConnected: isConnected }); }
-        );
-    }
-
-    componentWillUnmount() {
-        NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectionChange);
-    }
-
-    handleConnectionChange = (isConnected) => {
-        if (!isConnected) {
-            Alert.alert(
-                I18n.t('title_not_connect'),
-                I18n.t('title_try'),
-                [
-                    { text: 'OK', onPress: () => BackHandler.exitApp() },
-                ]
-            )
-        } else {
-            setTimeout(() => {
-                this.props.navigation.navigate('ChooseDocument')
-            }, 2000);
-        }
+        setTimeout(() => {
+            this.props.navigation.navigate('ChooseDocument')
+        }, 2000);
     }
 
     render() {

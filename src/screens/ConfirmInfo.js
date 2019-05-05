@@ -34,14 +34,14 @@ class ConfirmInfo extends Component {
             mUrl: url,
             spinner: false,
             mIsCam: isCam,
-            isConnected : true
+            mIsConnected: false
         };
     }
 
     componentDidMount() {
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectionChange.bind(this));
         NetInfo.isConnected.fetch().done(isConnected => {
-            this.setState({ isConnected });
+            console.log(isConnected)
         });
     }
 
@@ -50,9 +50,9 @@ class ConfirmInfo extends Component {
     }
 
     handleConnectionChange = (isConnected) => {
-        if (!isConnected) {
-           this.showMsgNotConnect()
-        }
+        this.setState({
+            mIsConnected: isConnected
+        })
     }
 
     showMsgNotConnect() {
@@ -60,7 +60,7 @@ class ConfirmInfo extends Component {
             I18n.t('title_not_connect'),
             I18n.t('title_try'),
             [
-                { text: 'OK', onPress: () => {} },
+                { text: 'OK', onPress: () => { } },
             ]
         )
     }
@@ -69,11 +69,11 @@ class ConfirmInfo extends Component {
         header: null,
     };
 
-    checkNetwork(){
-        console.log(this.state.isConnected)
-        if(this.state.isConnected){
+    checkNetwork() {
+        console.log(this.state.mIsConnected)
+        if (this.state.mIsConnected) {
             this.uploadImage()
-        }else{
+        } else {
             this.showMsgNotConnect()
         }
     }
@@ -211,6 +211,9 @@ class ConfirmInfo extends Component {
                                 url: this.state.mUrl
                             })
                         } else {
+                            this.setState({
+                                mFilePath : ''
+                            })
                             this.launchPickImage()
                         }
                     }

@@ -22,8 +22,7 @@ class ChooseDocument extends Component {
             data: [],
             webPage: '',
             lang: '',
-            spinner: true,
-            isConnected: true
+            spinner: false,
         }
     }
 
@@ -34,69 +33,59 @@ class ChooseDocument extends Component {
             })
             console.log('languages[0]', this.state.lang)
         });
-        this.getDocumentAPI()
     }
 
     componentDidMount() {
-        NetInfo.isConnected.addEventListener(
-            'connectionChange',
-            this._handleConnectivityChange,
+        NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectionChange.bind(this));
+        NetInfo.isConnected.fetch().done(
+            (isConnected) => { this.setState({ isConnected: isConnected }); }
         );
-        NetInfo.isConnected.fetch().done(isConnected => {
-            this.setState({ isConnected });
-        });
     }
 
     componentWillUnmount() {
-        NetInfo.isConnected.removeEventListener(
-            'connectionChange',
-            this._handleConnectivityChange,
-        );
+        NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectionChange);
     }
 
-    _handleConnectivityChange = isConnected => {
+    handleConnectionChange = (isConnected) => {
         if (!isConnected) {
-            this.showMsgNotConnect()
+            Alert.alert(
+                I18n.t('title_not_connect'),
+                I18n.t('title_try'),
+                [
+                    { text: 'OK', onPress: () => BackHandler.exitApp() },
+                ]
+            )
+        } else {
+            this.getDocumentAPI()
         }
-    };
-
-    showMsgNotConnect() {
-        Alert.alert(
-            I18n.t('title_not_connect'),
-            I18n.t('title_try'),
-            [
-                { text: 'OK', onPress: () => { } },
-            ]
-        )
     }
 
     getDocumentAPI = () => {
-        if (this.state.isConnected) {
-            axios.get('https://tenten.smartocr.vn/listDocument', { headers: { 'api-key': Constant.API_KEY } })
-                .then(response => {
-                    this.setState({
-                        spinner: false
-                    })
-                    if (response.data.result_code == Constant.RESULT_OK) {
-                        console.log('response', response.data);
-                        this.setState({
-                            webPage: response.data.web_page,
-                            data: response.data.document
-                        })
-                    } else {
-                        this.errorAlert()
-                    }
+        this.setState({
+            spinner: true
+        })
+        axios.get('https://tenten.smartocr.vn/listDocument', { headers: { 'api-key': Constant.API_KEY } })
+            .then(response => {
+                this.setState({
+                    spinner: false
                 })
-                .catch(error => {
+                if (response.data.result_code == Constant.RESULT_OK) {
+                    console.log('response', response.data);
                     this.setState({
-                        spinner: false
+                        webPage: response.data.web_page,
+                        data: response.data.document
                     })
+                } else {
                     this.errorAlert()
-                    console.log('error', error);
-                });
-        } else {
-            this.showMsgNotConnect()
-        }
+                }
+            })
+            .catch(error => {
+                this.setState({
+                    spinner: false
+                })
+                this.errorAlert()
+                console.log('error', error);
+            });
     }
 
     errorAlert() {
