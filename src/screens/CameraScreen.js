@@ -51,7 +51,7 @@ export default class CameraScreen extends React.Component {
       depth: 0,
       type: 'back',
       whiteBalance: 'auto',
-      ratio: '16:9',
+      ratio: '4:3',
       mFlagCam: flagCam,
       mHasBack: hasBack,
       mUrl: url,
@@ -108,6 +108,8 @@ export default class CameraScreen extends React.Component {
 
   renderCamera() {
     return (
+      <View style={{ flex: 1 }}>
+      <View style={{ backgroundColor: '#313538', width: '100%', height: "10%" }} />
       <RNCamera
         ref={ref => {
           this.camera = ref;
@@ -120,7 +122,6 @@ export default class CameraScreen extends React.Component {
         flashMode={this.state.flash}
         autoFocus={this.state.autoFocus}
         whiteBalance={this.state.whiteBalance}
-        ratio={this.state.ratio}
         captureAudio={false}
         androidCameraPermissionOptions={{
           title: 'Permission to use camera',
@@ -128,37 +129,29 @@ export default class CameraScreen extends React.Component {
           buttonPositive: 'Ok',
           buttonNegative: 'Cancel',
         }}>
-        {({ camera, status }) => {
+        {({ camera, status, recordAudioPermissionStatus }) => {
           if (status == 'NOT_AUTHORIZED') return <PendingView />;
-          return (
-            <View style={{
-              flex: 1,
-              alignItems: 'flex-start',
-              justifyContent: 'flex-start',
-            }}>
-              <View style={{ backgroundColor: '#313538', width: '100%', height: 50 }} />
-              <View style={{
-                width: '100%',
-                backgroundColor: '#313538',
-                justifyContent: 'center',
-                alignItems: 'center',
-                position: 'absolute',
-                bottom: 0
-              }}>
-                <TouchableOpacity
-                  underlayColor='#fff'
-                  onPress={this.takePicture.bind(this)}>
-                  <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['#f33f5e', '#ab6f84']} style={[styles.button, styles.buttonTwo]}>
-                    <Text style={styles.buttonText}>{this.state.mFlagCam == Constant.TYPE_FRONT ? I18n.t('title_take_front') : I18n.t('title_take_back')}</Text>
-                  </LinearGradient>
-                </TouchableOpacity>
-
-              </View>
-
-            </View>
-          );
         }}
       </RNCamera>
+      <View
+        style={{
+          width: '100%',
+          height: "15%",
+          backgroundColor: '#313538',
+          justifyContent: 'center',
+          alignItems: 'center',
+          position: 'absolute',
+          bottom: 0
+        }}>
+        <TouchableOpacity
+          underlayColor='#fff'
+          onPress={this.takePicture.bind(this)}>
+          <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['#f33f5e', '#ab6f84']} style={[styles.button, styles.buttonTwo]}>
+            <Text style={styles.buttonText}>{this.state.mFlagCam == Constant.TYPE_FRONT ? I18n.t('title_take_front') : I18n.t('title_take_back')}</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </View>
+    </View>
     );
   }
 
@@ -180,8 +173,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  preview: {
-    flex: 1,
+ preview: {
+    width: '100%',
+    height: '75%',
   },
   button: {
     paddingTop: 10,
