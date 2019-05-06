@@ -38,6 +38,7 @@ class ChooseDocument extends Component {
 
     componentDidMount() {
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectionChange.bind(this));
+        
         this.getDocumentAPI()
     }
 
