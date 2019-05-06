@@ -148,10 +148,12 @@ class ChooseDocument extends Component {
 
     chooseItemDocument = (item) => {
         if (item.active) {
+            console.log('type',item.id)
             this.props.navigation.navigate('ChooseMethod', {
                 hasBack: item.has_back,
                 image: item.image,
-                url: item.url
+                url: item.url,
+                typeDocument : item.id
             })
         } else {
             Alert.alert(

@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { View, StyleSheet, ScrollView, Image, Text, TouchableOpacity } from 'react-native'
 import I18n, { getLanguages } from 'react-native-i18n';
 import Header from '../components/Header';
-import TitleText from '../components/TitleText';
-import ContentText from '../components/ContentText';
+import CmtComponent from '../components/CmtComponent';
+import LicenseComponent from '../components/LicenseComponent';
 import LinearGradient from 'react-native-linear-gradient';
 import * as Constant from '../Constant';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -22,6 +22,7 @@ class InfoDocumentScreen extends Component {
         const { navigation } = this.props
         hasBack = navigation.getParam('hasBack', true)
         isCam = navigation.getParam('isCam', false)
+        typeDocument = navigation.getParam('typeDocument', 0)
         this.state = {
             mFileFrontPath: '',
             mFileBackPath: '',
@@ -33,13 +34,21 @@ class InfoDocumentScreen extends Component {
             mSex: '',
             mCountry: '',
             mAddress: '',
+
+            mNameLicense: '',
+            mBirthGengoLicense: '',
+            mBirthYyyyMmDdLicense: '',
+            mAddressLicense: '',
+
             mHasBack: hasBack,
             mIsCam: isCam,
             isBackNotEmpty: false,
             isFrontNotEmpty: false,
             isSexEmpty: false,
-            isCreateAtEmpty: false
+            isCreateAtEmpty: false,
+            mTypeDocument: typeDocument
         }
+        console.log('mTypeDocument', this.state.mTypeDocument)
     }
 
     confirmAgain = () => {
@@ -51,65 +60,90 @@ class InfoDocumentScreen extends Component {
         getLanguages().then(languages => {
             this.setState({ languages });
         });
-        AsyncStorage.getItem(Constant.DATA_FRONT, (err, result) => {
-            try {
-                let frontObj = JSON.parse(result);
-                if (frontObj != null) {
-                    console.log(frontObj.name);
-                    if (frontObj.sex === 'N/A') {
-                        console.log(frontObj.sex);
-                        this.setState({
-                            isSexEmpty: true
-                        })
-                        console.log('isSexEmpty', this.state.isSexEmpty)
-                    } else {
-                        this.setState({
-                            mSex: frontObj.sex
-                        })
+        switch (this.state.mTypeDocument) {
+            case 5:
+                AsyncStorage.getItem(Constant.DATA_FRONT, (err, result) => {
+                    try {
+                        let frontObj = JSON.parse(result);
+                        if (frontObj != null) {
+                            this.setState({
+                                mNameLicense: frontObj.Kanji_Name,
+                                mBirthGengoLicense: frontObj.BirthGengo + frontObj.BirthDd + frontObj.BirthMm + frontObj.BirthYy,
+                                mBirthYyyyMmDdLicense: frontObj.BirthYyyyMmDd,
+                                mAddressLicense: frontObj.Address,
+                            })
+                        } else {
+                            this.setState({
+                                isFrontNotEmpty: true
+                            })
+                        }
+                    } catch (ex) {
+                        console.error(ex);
                     }
+                });
+                break;
+            case 1:
+                AsyncStorage.getItem(Constant.DATA_FRONT, (err, result) => {
+                    try {
+                        let frontObj = JSON.parse(result);
+                        if (frontObj != null) {
+                            console.log(frontObj.name);
+                            if (frontObj.sex === 'N/A') {
+                                console.log(frontObj.sex);
+                                this.setState({
+                                    isSexEmpty: true
+                                })
+                                console.log('isSexEmpty', this.state.isSexEmpty)
+                            } else {
+                                this.setState({
+                                    mSex: frontObj.sex
+                                })
+                            }
 
-                    this.setState({
-                        mName: frontObj.name,
-                        mID: frontObj.id,
-                        mBirthday: frontObj.birthday,
-                        mAddress: frontObj.address
-                    })
-                } else {
-                    this.setState({
-                        isFrontNotEmpty: true
-                    })
-                }
-            } catch (ex) {
-                console.error(ex);
-            }
-        });
-        AsyncStorage.getItem(Constant.DATA_BACK, (err, result) => {
-            try {
-                let backObj = JSON.parse(result);
-                if (backObj != null) {
-                    if (backObj.issue_at === 'N/A') {
-                        console.log(backObj.issue_at);
-                        this.setState({
-                            isCreateAtEmpty: true
-                        })
-                        console.log('isCreateAtEmpty', this.state.isCreateAtEmpty)
-                    } else {
-                        this.setState({
-                            mCreateAt: backObj.issue_at
-                        })
+                            this.setState({
+                                mName: frontObj.name,
+                                mID: frontObj.id,
+                                mBirthday: frontObj.birthday,
+                                mAddress: frontObj.address
+                            })
+                        } else {
+                            this.setState({
+                                isFrontNotEmpty: true
+                            })
+                        }
+                    } catch (ex) {
+                        console.error(ex);
                     }
-                    this.setState({
-                        mCreateDate: backObj.issue_date
-                    })
-                } else {
-                    this.setState({
-                        isBackNotEmpty: true
-                    })
-                }
-            } catch (ex) {
-                console.error(ex);
-            }
-        });
+                });
+                AsyncStorage.getItem(Constant.DATA_BACK, (err, result) => {
+                    try {
+                        let backObj = JSON.parse(result);
+                        if (backObj != null) {
+                            if (backObj.issue_at === 'N/A') {
+                                console.log(backObj.issue_at);
+                                this.setState({
+                                    isCreateAtEmpty: true
+                                })
+                                console.log('isCreateAtEmpty', this.state.isCreateAtEmpty)
+                            } else {
+                                this.setState({
+                                    mCreateAt: backObj.issue_at
+                                })
+                            }
+                            this.setState({
+                                mCreateDate: backObj.issue_date
+                            })
+                        } else {
+                            this.setState({
+                                isBackNotEmpty: true
+                            })
+                        }
+                    } catch (ex) {
+                        console.error(ex);
+                    }
+                });
+                break;
+        }
         AsyncStorage.getItem(Constant.IMG_BACK, (err, result) => {
             this.setState({
                 mFileBackPath: result
@@ -137,44 +171,38 @@ class InfoDocumentScreen extends Component {
     }
 
     render() {
+
+        let checkDocument = this.state.mTypeDocument === 1 ?
+            <CmtComponent
+                mFileFrontPath={this.state.mFileFrontPath}
+                isFrontNotEmpty={this.state.isFrontNotEmpty}
+                mHasBack={this.state.mHasBack}
+                isBackNotEmpty={this.state.isBackNotEmpty}
+                mFileBackPath={this.state.mFileBackPath}
+                mName={this.state.mName}
+                mID={this.state.mID}
+                mCreateDate={this.state.mCreateDate}
+                isCreateAtEmpty={this.state.isCreateAtEmpty}
+                mBirthday={this.state.mBirthday}
+                mSex={this.state.mSex}
+                isSexEmpty={this.state.isSexEmpty}
+                mAddress={this.state.mAddress}
+            /> : this.state.mTypeDocument === 5 ?
+                <LicenseComponent
+                    mFileFrontPath={this.state.mFileFrontPath}
+                    isFrontNotEmpty={this.state.isFrontNotEmpty}
+                    mNameLicense={this.state.mNameLicense}
+                    mBirthdayLicense={this.state.mBirthGengoLicense}
+                    mBirthdayNumberLicense={this.state.mBirthYyyyMmDdLicense}
+                    mAddressLicense={this.state.mAddressLicense}
+
+                /> : null
         return (
             <ScrollView>
                 <View style={styles.container}>
                     <Header title={I18n.t('title_info_header')} />
                     <View style={styles.containerDoc}>
-                        <Text style={this.state.isFrontNotEmpty ? styles.hidden : styles.titleText}>{I18n.t('title_image_front')}</Text>
-                        <Image
-                            source={{ uri: this.state.mFileFrontPath }}
-                            style={this.state.isFrontNotEmpty ? styles.hidden : [styles.img, styles.marginBottom]}
-                            resizeMode={this.state.mIsCam ? "contain" : "contain"} />
-                        <View style={this.state.mHasBack ? {} : styles.hidden}>
-                            <Text style={this.state.isBackNotEmpty ? styles.hidden : styles.titleText}>{I18n.t('title_image_back')}</Text>
-                            <Image
-                                source={{ uri: this.state.mFileBackPath }}
-                                style={this.state.isBackNotEmpty ? styles.hidden : [styles.img, styles.marginBottom]}
-                                resizeMode={this.state.mIsCam ? "contain" : "contain"} />
-                        </View>
-                        <TitleText title={I18n.t('title_name')} />
-                        <ContentText text={this.state.mName} />
-
-                        <TitleText title={I18n.t('title_id')} />
-                        <ContentText text={this.state.mID} />
-
-                        <TitleText title={I18n.t('title_create_date')} />
-                        <ContentText text={this.state.mCreateDate} />
-
-                        <TitleText title={I18n.t('title_create_at')} isHidden={this.state.isCreateAtEmpty} />
-                        <ContentText text={this.state.mCreateAt} isHidden={this.state.isCreateAtEmpty} />
-
-                        <TitleText title={I18n.t('title_birthday')} />
-                        <ContentText text={this.state.mBirthday} />
-
-                        <TitleText title={I18n.t('title_sex')} isHidden={this.state.isSexEmpty} />
-                        <ContentText text={this.state.mSex} isHidden={this.state.isSexEmpty} />
-
-                        <TitleText title={I18n.t('title_address')} />
-                        <ContentText text={this.state.mAddress} />
-
+                        {checkDocument}
                         <TouchableOpacity
                             style={{ marginBottom: 20 }}
                             underlayColor='#fff'

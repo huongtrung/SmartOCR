@@ -37,5 +37,9 @@
   "title_progess_image":"処理中…",
   "title_not_auth":"カメラへアクセス許可がありません。やり直してください。",
   "title_msg_take_front": "表面の写真を撮影又は選択してください。",
-  "title_msg_take_back": "裏面の写真を撮影又は選択してください。"
+  "title_msg_take_back": "裏面の写真を撮影又は選択してください。",
+  "title_name_license" :"氏名",
+  "title_birthday_license" :"生年月日（年号）",
+  "title_birth_yyyyMmDd_license" :"生年月日（西暦）",
+  "title_address_license" :"住所"
 }

@@ -24,15 +24,18 @@ class ChooseMethod extends Component {
         hasBack = navigation.getParam('hasBack', true)
         image = navigation.getParam('image', '')
         url = navigation.getParam('url', '')
+        typeDocument = navigation.getParam('typeDocument', 0)
 
         this.state = {
             filePath: {},
             mHasBack: hasBack,
             mImage: image,
             mUrl: url,
+            mTypeDocument : typeDocument
         }
         console.log(this.state.mHasBack);
         console.log(this.state.mUrl);
+        console.log(this.state.mTypeDocument);
     }
 
     launchPickImage = () => {
@@ -60,7 +63,8 @@ class ChooseMethod extends Component {
                             typeTake: Constant.TYPE_TAKE_GALLERY,
                             flagCam: Constant.TYPE_FRONT,
                             hasBack: this.state.mHasBack,
-                            url: this.state.mUrl
+                            url: this.state.mUrl,
+                            typeDocument : this.state.mTypeDocument
                         })
                     })
                     .catch(err => {
@@ -94,7 +98,8 @@ class ChooseMethod extends Component {
                         this.props.navigation.navigate('CameraScreen', {
                             flagCam: Constant.TYPE_FRONT,
                             hasBack: this.state.mHasBack,
-                            url: this.state.mUrl
+                            url: this.state.mUrl,
+                            typeDocument : this.state.mTypeDocument
                         })
                     }
                 },

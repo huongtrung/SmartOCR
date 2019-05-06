@@ -37,5 +37,10 @@
   "title_msg_take_back": "Bạn hãy chụp ảnh mặt sau của tài liệu",
   "title_error_pick":"Bạn phải chọn đúng ảnh tài liệu",
   "title_progess_image":"Đang xử lý ảnh ...",
-  "title_not_auth":"Không có quyền truy cập camera\nHãy thử lại !"
+  "title_not_auth":"Không có quyền truy cập camera\nHãy thử lại !",
+  "title_name_license" :"Tên",
+  "title_birthday_license" :"Ngày sinh",
+  "title_birth_yyyyMmDd_license" :"Ngày sinh",
+  "title_address_license" :"Địa chỉ"
+
 }

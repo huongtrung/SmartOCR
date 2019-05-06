@@ -26,6 +26,8 @@ class ConfirmInfo extends Component {
         flagCam = navigation.getParam('flagCam', Constant.TYPE_FRONT)
         hasBack = navigation.getParam('hasBack', true)
         url = navigation.getParam('url', '')
+        typeDocument = navigation.getParam('typeDocument', 0)
+
         this.state = {
             mFilePath: filePath,
             mTypeTake: typeTake,
@@ -34,8 +36,10 @@ class ConfirmInfo extends Component {
             mUrl: url,
             spinner: false,
             mIsCam: isCam,
-            mIsConnected: false
+            mIsConnected: false,
+            mTypeDocument: typeDocument
         };
+        console.log('mTypeDocument', this.state.mTypeDocument)
     }
 
     componentDidMount() {
@@ -85,7 +89,9 @@ class ConfirmInfo extends Component {
             uri: this.state.mFilePath,
             type: 'image/*'
         })
-        form.append('encode', 1)
+        if (this.state.mTypeDocument != 5) {
+            form.append('encode', 1)
+        }
         const headers = {
             'Content-Type': 'multipart/form-data',
             'api-key': Constant.API_KEY
@@ -106,12 +112,12 @@ class ConfirmInfo extends Component {
                         ]
                     )
                 } else {
-                    if (res.data.front_flg == 0) {
-                        AsyncStorage.setItem(Constant.DATA_FRONT, JSON.stringify(res.data), () => { });
-                        AsyncStorage.setItem(Constant.IMG_FRONT, this.state.mFilePath);
-                    } else if (res.data.front_flg == 1) {
+                    if (res.data.front_flg == 1) {
                         AsyncStorage.setItem(Constant.DATA_BACK, JSON.stringify(res.data), () => { });
                         AsyncStorage.setItem(Constant.IMG_BACK, this.state.mFilePath);
+                    } else {
+                        AsyncStorage.setItem(Constant.DATA_FRONT, JSON.stringify(res.data), () => { });
+                        AsyncStorage.setItem(Constant.IMG_FRONT, this.state.mFilePath);
                     }
                     switch (this.state.mFlagCam) {
                         case Constant.TYPE_FRONT:
@@ -125,15 +131,18 @@ class ConfirmInfo extends Component {
                                     this.openPickImage()
                                 }
                             } else {
+                                console.log(this.state.mTypeDocument)
                                 this.props.navigation.navigate('InfoDocumentScreen', {
                                     hasBack: this.state.mHasBack,
-                                    isCam: this.state.mIsCam
+                                    isCam: this.state.mIsCam,
+                                    typeDocument: this.state.mTypeDocument
                                 })
                             }
                             break;
                         case Constant.TYPE_BACK:
                             this.props.navigation.navigate('InfoDocumentScreen', {
-                                isCam: this.state.mIsCam
+                                isCam: this.state.mIsCam,
+                                typeDocument: this.state.mTypeDocument
                             })
                             break;
                     }
@@ -172,7 +181,8 @@ class ConfirmInfo extends Component {
                         this.props.navigation.navigate('CameraScreen', {
                             flagCam: Constant.TYPE_BACK,
                             hasBack: this.state.mHasBack,
-                            url: this.state.mUrl
+                            url: this.state.mUrl,
+                            typeDocument: this.state.mTypeDocument
                         })
                     }
                 },
@@ -205,7 +215,8 @@ class ConfirmInfo extends Component {
                             this.props.navigation.navigate('CameraScreen', {
                                 flagCam: this.state.mFlagCam,
                                 hasBack: this.state.mHasBack,
-                                url: this.state.mUrl
+                                url: this.state.mUrl,
+                                typeDocument: this.state.mTypeDocument
                             })
                         } else {
                             this.setState({

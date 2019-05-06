@@ -43,6 +43,7 @@ export default class CameraScreen extends React.Component {
     flagCam = navigation.getParam('flagCam', Constant.TYPE_FRONT)
     hasBack = navigation.getParam('hasBack', true)
     url = navigation.getParam('url', '')
+    typeDocument = navigation.getParam('typeDocument', 0)
 
     this.state = {
       flash: 'off',
@@ -56,15 +57,13 @@ export default class CameraScreen extends React.Component {
       mHasBack: hasBack,
       mUrl: url,
       spinner: false,
+      mTypeDocument : typeDocument
     };
     this.photoQuality = 640;
     console.log(this.state.mFlagCam);
     console.log(this.state.mHasBack);
     console.log(this.state.mUrl);
-  }
-
-  componentWillMount() {
-    console.log('componentWillMount');
+    console.log(this.state.mTypeDocument);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -72,7 +71,9 @@ export default class CameraScreen extends React.Component {
       mFlagCam: nextProps.navigation.state.params.flagCam,
       mHasBack: nextProps.navigation.state.params.hasBack,
       mUrl: nextProps.navigation.state.params.url,
+      mTypeDocument: nextProps.navigation.state.params.typeDocument,
     })
+    console.log(this.state.mTypeDocument);
   }
 
   takePicture = async () => {
@@ -97,7 +98,8 @@ export default class CameraScreen extends React.Component {
             typeTake: Constant.TYPE_TAKE_CAMERA,
             flagCam: this.state.mFlagCam,
             hasBack: this.state.mHasBack,
-            url: this.state.mUrl
+            url: this.state.mUrl,
+            typeDocument : this.state.mTypeDocument
           })
         })
         .catch(err => {
