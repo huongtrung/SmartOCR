@@ -302,6 +302,7 @@ class ConfirmInfo extends Component {
                 <Spinner
                     visible={this.state.spinner}
                     color="#f33f5e"
+                    cancelable={true}
                 />
             </View>
         );
