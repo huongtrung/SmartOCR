@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Image, StyleSheet, Text, TouchableOpacity, ScrollView, BackHandler, ToastAndroid, Alert } from 'react-native';
+import { View, Image, StyleSheet, Text, TouchableOpacity, ScrollView, BackHandler, Platform, Alert } from 'react-native';
 import Header from '../components/Header';
 import I18n, { getLanguages } from 'react-native-i18n';
 import axios from 'react-native-axios';
@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import ImageResizer from 'react-native-image-resizer';
 import Spinner from 'react-native-loading-spinner-overlay';
+import ViewLoading from "../components/ViewLoading"
 var ImagePicker = require('react-native-image-picker');
 import RNFetchBlob from 'rn-fetch-blob';
 I18n.fallbacks = true;
@@ -137,6 +138,7 @@ class ConfirmInfo extends Component {
                                     mFlagCam: Constant.TYPE_BACK
                                 })
                                 if (this.state.mTypeTake == Constant.TYPE_TAKE_CAMERA) {
+                                    console.log("TYPE TAKE ===> ", this.state.mTypeTake)
                                     this.gotoCameraScreen()
                                 } else {
                                     this.openPickImage()
@@ -257,6 +259,9 @@ class ConfirmInfo extends Component {
                 console.log('ImagePicker Error: ', response.error);
             } else {
                 console.log('response', response)
+                if (Platform.OS === "ios") {
+                    response.uri = response.uri.replace("file://", "");
+                }
                 RNFetchBlob.fs.stat(response.uri)
                     .then((stats) => {
                         console.log(stats)
@@ -322,11 +327,12 @@ class ConfirmInfo extends Component {
                         </LinearGradient>
                     </TouchableOpacity>
                 </View>
-                <Spinner
+                {/* <Spinner
                     visible={this.state.spinner}
                     color="#f33f5e"
-                    cancelable={true}
-                />
+                    // cancelable={true}
+                /> */}
+                {this.state.spinner ? <ViewLoading /> : null}
             </View>
         );
     }
