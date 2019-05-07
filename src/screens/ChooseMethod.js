@@ -16,7 +16,7 @@ I18n.translations = {
 
 class ChooseMethod extends Component {
     static navigationOptions = {
-        header: null,
+        title: I18n.t('title_method')
     };
     constructor(props) {
         super(props);
@@ -114,7 +114,7 @@ class ChooseMethod extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <Header title={I18n.t('title_method')} />
+                {/* <Header title={I18n.t('title_method')} /> */}
                 <ImageBackground resizeMode="cover" source={require('../img/dangky_bg.png')} style={styles.imgBackground}>
                     <Image resizeMode="contain" source={{ uri: this.state.mImage, cache: 'force-cache' }} style={{ height: 250, width: '90%' }} onError={(e) => { this.props.source = { uri: '../img/image_not_found.png' } }} />
                     <TouchableOpacity

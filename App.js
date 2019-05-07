@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Image } from 'react-native'
 import { createStackNavigator, createAppContainer } from 'react-navigation';
 import { Provider } from "react-redux";
 import store from "./src/reducers/Store";
@@ -22,6 +23,21 @@ const RootStack = createStackNavigator(
   },
   {
     initialRouteName: 'SplashScreen',
+    defaultNavigationOptions: {
+      headerBackground: (
+        <Image
+          style={{ width: "100%", height: "100%" }}
+          source={
+            require("./src/img/title_bg.png")
+          }
+        />
+      ),
+      headerTitleStyle: {
+        color: '#fff'
+      },
+      headerRight: null,
+      headerLeft: null
+    }
   }
 );
 

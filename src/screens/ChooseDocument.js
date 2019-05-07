@@ -14,7 +14,7 @@ I18n.translations = {
 }
 class ChooseDocument extends Component {
     static navigationOptions = {
-        header: null,
+        title: I18n.t('title_doc')
     };
     constructor(props) {
         super(props);
@@ -186,7 +186,7 @@ class ChooseDocument extends Component {
             <View style={{ flex: 1 }}>
                 <ScrollView>
                     <View style={styles.containerView}>
-                        <Header title={I18n.t('title_doc')} />
+                        {/* <Header title={I18n.t('title_doc')} /> */}
                         <View style={styles.container}>
                             <View style={this.state.mIsNotConnected ? styles.hidden : styles.containerRow}>
                                 <Text style={styles.textLang}>{I18n.t('title_vn')}</Text>
