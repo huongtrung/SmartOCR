@@ -54,7 +54,7 @@ class ChooseMethod extends Component {
                 console.log('ImagePicker Error: ', response.error);
             } else {
                 console.log('response', response)
-                ImageResizer.createResizedImage(response.uri, 640, (640 * 4) / 3, 'JPEG', 70)
+                ImageResizer.createResizedImage(response.uri, 640, (640 * 4) / 3, 'JPEG', 50)
                     .then(({ uri }) => {
                         console.log('mHeight', response.height)
                         this.props.navigation.navigate('ConfirmInfo', {

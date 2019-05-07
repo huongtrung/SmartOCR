@@ -9,6 +9,18 @@ I18n.translations = {
     'en': require('../translation/en'),
     'ja': require('../translation/ja'),
 }
+const ErrorView = () => (
+    <View
+        style={{
+            width: '100%',
+            flex: 1,
+            backgroundColor: '#313538',
+            justifyContent: 'center',
+            alignItems: 'center',
+        }}>
+        <Text style={styles.buttonText}>{I18n.t('title_not_auth')}</Text>
+    </View>
+);
 export default class CmtComponent extends Component {
     constructor(props) {
         super(props);
@@ -32,7 +44,7 @@ export default class CmtComponent extends Component {
                 <TitleText title={I18n.t('title_birth_yyyyMmDd_license')} />
                 <ContentText text={this.props.mBirthdayNumberLicense} />
 
-                <TitleText title={I18n.t('title_address_license')}  />
+                <TitleText title={I18n.t('title_address_license')} />
                 <ContentText text={this.props.mAddressLicense} />
             </View>
         );

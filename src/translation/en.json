@@ -39,8 +39,9 @@
   "title_progess_image":"Đang xử lý ảnh ...",
   "title_not_auth":"Không có quyền truy cập camera\nHãy thử lại !",
   "title_name_license" :"Tên",
-  "title_birthday_license" :"Ngày sinh",
+  "title_birthday_license" :"Ngày sinh (Era Tên)",
   "title_birth_yyyyMmDd_license" :"Ngày sinh",
-  "title_address_license" :"Địa chỉ"
+  "title_address_license" :"Địa chỉ",
+  "title_not_detect":"Không detect được tài liệu"
 
 }

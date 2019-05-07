@@ -46,7 +46,8 @@ class InfoDocumentScreen extends Component {
             isFrontNotEmpty: false,
             isSexEmpty: false,
             isCreateAtEmpty: false,
-            mTypeDocument: typeDocument
+            mTypeDocument: typeDocument,
+            mErrorMessage : ''
         }
         console.log('mTypeDocument', this.state.mTypeDocument)
     }
@@ -68,9 +69,10 @@ class InfoDocumentScreen extends Component {
                         if (frontObj != null) {
                             this.setState({
                                 mNameLicense: frontObj.Kanji_Name,
-                                mBirthGengoLicense: frontObj.BirthGengo + frontObj.BirthDd + frontObj.BirthMm + frontObj.BirthYy,
+                                mBirthGengoLicense: frontObj.BirthGengo + frontObj.BirthDd + "年" + frontObj.BirthMm + "月" + frontObj.BirthYy + "日",
                                 mBirthYyyyMmDdLicense: frontObj.BirthYyyyMmDd,
                                 mAddressLicense: frontObj.Address,
+                                mErrorMessage : frontObj.ErrorMessageId
                             })
                         } else {
                             this.setState({
@@ -189,6 +191,7 @@ class InfoDocumentScreen extends Component {
                 mAddress={this.state.mAddress}
             /> : this.state.mTypeDocument === 5 ?
                 <LicenseComponent
+                    mErrorMessage={this.state.mErrorMessage}
                     mFileFrontPath={this.state.mFileFrontPath}
                     isFrontNotEmpty={this.state.isFrontNotEmpty}
                     mNameLicense={this.state.mNameLicense}

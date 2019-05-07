@@ -111,7 +111,17 @@ class ConfirmInfo extends Component {
                             { text: 'OK', onPress: () => { } },
                         ]
                     )
-                } else {
+                } 
+                else if(res.data.ErrorMessageId == 'Error text line detection (size of img is smaller than 3) : 0'){
+                    Alert.alert(
+                        I18n.t('title_not_detect'),
+                        '',
+                        [
+                            { text: 'OK', onPress: () => { } },
+                        ]
+                    )
+                }
+                else {
                     if (res.data.front_flg == 1) {
                         AsyncStorage.setItem(Constant.DATA_BACK, JSON.stringify(res.data), () => { });
                         AsyncStorage.setItem(Constant.IMG_BACK, this.state.mFilePath);
@@ -246,7 +256,7 @@ class ConfirmInfo extends Component {
                 console.log('ImagePicker Error: ', response.error);
             } else {
                 console.log('response', response)
-                ImageResizer.createResizedImage(response.uri, 640, (640 * 4) / 3, 'JPEG', 70)
+                ImageResizer.createResizedImage(response.uri, 640, (640 * 4) / 3, 'JPEG', 50)
                     .then(({ uri }) => {
                         console.log(uri);
                         this.setState({

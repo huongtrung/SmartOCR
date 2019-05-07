@@ -41,5 +41,7 @@
   "title_name_license" :"氏名",
   "title_birthday_license" :"生年月日（年号）",
   "title_birth_yyyyMmDd_license" :"生年月日（西暦）",
-  "title_address_license" :"住所"
+  "title_address_license" :"住所",
+  "title_not_detect":"認識できませんでした"
+
 }

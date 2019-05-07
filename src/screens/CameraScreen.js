@@ -87,7 +87,7 @@ export default class CameraScreen extends React.Component {
       this.setState({
         spinner: true
       })
-      ImageResizer.createResizedImage(data.uri, this.photoQuality, (this.photoQuality * 4) / 3, 'JPEG', 70)
+      ImageResizer.createResizedImage(data.uri, this.photoQuality, (this.photoQuality * 4) / 3, 'JPEG', 50)
         .then(({ uri }) => {
           this.setState({
             spinner: false
