@@ -69,7 +69,7 @@ class InfoDocumentScreen extends Component {
                         if (frontObj != null) {
                             this.setState({
                                 mNameLicense: frontObj.Kanji_Name,
-                                mBirthGengoLicense: frontObj.BirthGengo + frontObj.BirthDd + "年" + frontObj.BirthMm + "月" + frontObj.BirthYy + "日",
+                                mBirthGengoLicense: frontObj.BirthGengo +frontObj.BirthYy + "年" + frontObj.BirthMm + "月" + frontObj.BirthDd + "日",
                                 mBirthYyyyMmDdLicense: frontObj.BirthYyyyMmDd,
                                 mAddressLicense: frontObj.Address,
                                 mErrorMessage : frontObj.ErrorMessageId

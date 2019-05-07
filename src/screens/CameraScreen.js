@@ -11,6 +11,7 @@ import * as Constant from '../Constant';
 import Spinner from 'react-native-loading-spinner-overlay';
 import I18n, { getLanguages } from 'react-native-i18n';
 import ImageResizer from 'react-native-image-resizer';
+import RNFetchBlob from 'rn-fetch-blob'
 
 I18n.fallbacks = true;
 
@@ -57,7 +58,7 @@ export default class CameraScreen extends React.Component {
       mHasBack: hasBack,
       mUrl: url,
       spinner: false,
-      mTypeDocument : typeDocument
+      mTypeDocument: typeDocument
     };
     this.photoQuality = 640;
     console.log(this.state.mFlagCam);
@@ -87,73 +88,96 @@ export default class CameraScreen extends React.Component {
       this.setState({
         spinner: true
       })
-      ImageResizer.createResizedImage(data.uri, this.photoQuality, (this.photoQuality * 4) / 3, 'JPEG', 50)
-        .then(({ uri }) => {
-          this.setState({
-            spinner: false
-          })
-          this.props.navigation.navigate('ConfirmInfo', {
-            isCam: true,
-            filePath: uri,
-            typeTake: Constant.TYPE_TAKE_CAMERA,
-            flagCam: this.state.mFlagCam,
-            hasBack: this.state.mHasBack,
-            url: this.state.mUrl,
-            typeDocument : this.state.mTypeDocument
-          })
+
+      RNFetchBlob.fs.stat(data.uri)
+        .then((stats) => {
+          console.log(stats)
+          if (stats.size > 3000000) {
+            console.log('file > 500000')
+            ImageResizer.createResizedImage(data.uri, this.photoQuality, (this.photoQuality * 4) / 3, 'JPEG', 70)
+              .then(({ uri }) => {
+                this.setState({
+                  spinner: false
+                })
+                this.props.navigation.navigate('ConfirmInfo', {
+                  isCam: true,
+                  filePath: uri,
+                  typeTake: Constant.TYPE_TAKE_CAMERA,
+                  flagCam: this.state.mFlagCam,
+                  hasBack: this.state.mHasBack,
+                  url: this.state.mUrl,
+                  typeDocument: this.state.mTypeDocument
+                })
+              })
+              .catch(err => {
+                console.log(err);
+              });
+          } else {
+            this.setState({
+              spinner: false
+            })
+            console.log('file < 500000')
+            this.props.navigation.navigate('ConfirmInfo', {
+              isCam: true,
+              filePath: data.uri,
+              typeTake: Constant.TYPE_TAKE_CAMERA,
+              flagCam: this.state.mFlagCam,
+              hasBack: this.state.mHasBack,
+              url: this.state.mUrl,
+              typeDocument: this.state.mTypeDocument
+            })
+          }
         })
-        .catch(err => {
-          console.log(err);
-        });
+        .catch((err) => { })
     }
   }
 
   renderCamera() {
     return (
       <View style={{ flex: 1 }}>
-      <View style={{ backgroundColor: '#313538', width: '100%', height: "10%" }} />
-      <RNCamera
-        ref={ref => {
-          this.camera = ref;
-        }}
-        onCameraReady={
-          console.log('onCameraReady')
-        }
-        style={styles.preview}
-        type={this.state.type}
-        flashMode={this.state.flash}
-        autoFocus={this.state.autoFocus}
-        whiteBalance={this.state.whiteBalance}
-        captureAudio={false}
-        androidCameraPermissionOptions={{
-          title: 'Permission to use camera',
-          message: 'We need your permission to use your camera',
-          buttonPositive: 'Ok',
-          buttonNegative: 'Cancel',
-        }}>
-        {({ camera, status, recordAudioPermissionStatus }) => {
-          if (status == 'NOT_AUTHORIZED') return <PendingView />;
-        }}
-      </RNCamera>
-      <View
-        style={{
-          width: '100%',
-          height: "15%",
-          backgroundColor: '#313538',
-          justifyContent: 'center',
-          alignItems: 'center',
-          position: 'absolute',
-          bottom: 0
-        }}>
-        <TouchableOpacity
-          underlayColor='#fff'
-          onPress={this.takePicture.bind(this)}>
-          <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['#f33f5e', '#ab6f84']} style={[styles.button, styles.buttonTwo]}>
-            <Text style={styles.buttonText}>{this.state.mFlagCam == Constant.TYPE_FRONT ? I18n.t('title_take_front') : I18n.t('title_take_back')}</Text>
-          </LinearGradient>
-        </TouchableOpacity>
+        <View style={{ backgroundColor: '#313538', width: '100%', height: "10%" }} />
+        <RNCamera
+          ref={ref => {
+            this.camera = ref;
+          }}
+          onCameraReady={
+            console.log('onCameraReady')
+          }
+          style={styles.preview}
+          type={this.state.type}
+          flashMode={this.state.flash}
+          autoFocus={this.state.autoFocus}
+          whiteBalance={this.state.whiteBalance}
+          captureAudio={false}
+          androidCameraPermissionOptions={{
+            title: 'Permission to use camera',
+            message: 'We need your permission to use your camera',
+            buttonPositive: 'Ok',
+            buttonNegative: 'Cancel',
+          }}>
+          {({ camera, status, recordAudioPermissionStatus }) => {
+            if (status == 'NOT_AUTHORIZED') return <PendingView />;
+          }}
+        </RNCamera>
+        <View
+          style={{
+            width: '100%',
+            height: "15%",
+            backgroundColor: '#313538',
+            justifyContent: 'center',
+            alignItems: 'center',
+            position: 'absolute',
+            bottom: 0
+          }}>
+          <TouchableOpacity
+            underlayColor='#fff'
+            onPress={this.takePicture.bind(this)}>
+            <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['#f33f5e', '#ab6f84']} style={[styles.button, styles.buttonTwo]}>
+              <Text style={styles.buttonText}>{this.state.mFlagCam == Constant.TYPE_FRONT ? I18n.t('title_take_front') : I18n.t('title_take_back')}</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
     );
   }
 
@@ -175,7 +199,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
- preview: {
+  preview: {
     width: '100%',
     height: '75%',
   },

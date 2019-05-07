@@ -10,6 +10,7 @@ import NetInfo from '@react-native-community/netinfo';
 import ImageResizer from 'react-native-image-resizer';
 import Spinner from 'react-native-loading-spinner-overlay';
 var ImagePicker = require('react-native-image-picker');
+import RNFetchBlob from 'rn-fetch-blob';
 I18n.fallbacks = true;
 
 I18n.translations = {
@@ -111,8 +112,8 @@ class ConfirmInfo extends Component {
                             { text: 'OK', onPress: () => { } },
                         ]
                     )
-                } 
-                else if(res.data.ErrorMessageId == 'Error text line detection (size of img is smaller than 3) : 0'){
+                }
+                else if (res.data.ErrorMessageId == 'Error text line detection (size of img is smaller than 3) : 0') {
                     Alert.alert(
                         I18n.t('title_not_detect'),
                         '',
@@ -256,16 +257,28 @@ class ConfirmInfo extends Component {
                 console.log('ImagePicker Error: ', response.error);
             } else {
                 console.log('response', response)
-                ImageResizer.createResizedImage(response.uri, 640, (640 * 4) / 3, 'JPEG', 50)
-                    .then(({ uri }) => {
-                        console.log(uri);
-                        this.setState({
-                            mFilePath: uri,
-                        });
+                RNFetchBlob.fs.stat(response.uri)
+                    .then((stats) => {
+                        console.log(stats)
+                        if (stats.size > 3000000) {
+                            ImageResizer.createResizedImage(response.uri, 640, (640 * 4) / 3, 'JPEG', 70)
+                                .then(({ uri }) => {
+                                    console.log(uri);
+                                    this.setState({
+                                        mFilePath: uri,
+                                    });
+                                })
+                                .catch(err => {
+                                    console.log(err);
+                                });
+                        } else {
+                            this.setState({
+                                mFilePath: response.uri,
+                            });
+                        }
                     })
-                    .catch(err => {
-                        console.log(err);
-                    });
+                    .catch((err) => { })
+
             }
         });
     };

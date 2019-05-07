@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
-import { ImageBackground, StyleSheet, View, Text, TouchableOpacity, Alert, Image} from 'react-native';
+import { ImageBackground, StyleSheet, View, Text, TouchableOpacity, Alert, Image } from 'react-native';
 import I18n, { getLanguages } from 'react-native-i18n';
 import Header from '../components/Header';
 import LinearGradient from 'react-native-linear-gradient';
 import ImageResizer from 'react-native-image-resizer';
 import * as Constant from '../Constant';
+import RNFetchBlob from 'rn-fetch-blob'
 
 var ImagePicker = require('react-native-image-picker');
+
 I18n.fallbacks = true;
 
 I18n.translations = {
@@ -31,7 +33,7 @@ class ChooseMethod extends Component {
             mHasBack: hasBack,
             mImage: image,
             mUrl: url,
-            mTypeDocument : typeDocument
+            mTypeDocument: typeDocument
         }
         console.log(this.state.mHasBack);
         console.log(this.state.mUrl);
@@ -54,22 +56,40 @@ class ChooseMethod extends Component {
                 console.log('ImagePicker Error: ', response.error);
             } else {
                 console.log('response', response)
-                ImageResizer.createResizedImage(response.uri, 640, (640 * 4) / 3, 'JPEG', 50)
-                    .then(({ uri }) => {
-                        console.log('mHeight', response.height)
-                        this.props.navigation.navigate('ConfirmInfo', {
-                            isCam: false,
-                            filePath: uri,
-                            typeTake: Constant.TYPE_TAKE_GALLERY,
-                            flagCam: Constant.TYPE_FRONT,
-                            hasBack: this.state.mHasBack,
-                            url: this.state.mUrl,
-                            typeDocument : this.state.mTypeDocument
+
+                RNFetchBlob.fs.stat(response.uri)
+                    .then((stats) => {
+                        console.log(stats)
+                        if (stats.size > 3000000) {
+                            ImageResizer.createResizedImage(response.uri, 640, (640 * 4) / 3, 'JPEG', 70)
+                                .then(({ uri }) => {
+                                    this.props.navigation.navigate('ConfirmInfo', {
+                                        isCam: false,
+                                        filePath: uri,
+                                        typeTake: Constant.TYPE_TAKE_GALLERY,
+                                        flagCam: Constant.TYPE_FRONT,
+                                        hasBack: this.state.mHasBack,
+                                        url: this.state.mUrl,
+                                        typeDocument: this.state.mTypeDocument
+                                    })
+                                })
+                                .catch(err => {
+                                    console.log(err);
+                                });
+                            }
+                            else {
+                                this.props.navigation.navigate('ConfirmInfo', {
+                                    isCam: false,
+                                    filePath: response.uri,
+                                    typeTake: Constant.TYPE_TAKE_GALLERY,
+                                    flagCam: Constant.TYPE_FRONT,
+                                    hasBack: this.state.mHasBack,
+                                    url: this.state.mUrl,
+                                    typeDocument: this.state.mTypeDocument
+                                })
+                             }
                         })
-                    })
-                    .catch(err => {
-                        console.log(err);
-                    });
+                    .catch((err) => { })
             }
         });
     }
@@ -99,7 +119,7 @@ class ChooseMethod extends Component {
                             flagCam: Constant.TYPE_FRONT,
                             hasBack: this.state.mHasBack,
                             url: this.state.mUrl,
-                            typeDocument : this.state.mTypeDocument
+                            typeDocument: this.state.mTypeDocument
                         })
                     }
                 },
