@@ -15,7 +15,7 @@ I18n.translations = {
 
 class InfoDocumentScreen extends Component {
     static navigationOptions = {
-        header: null,
+        title: I18n.t('title_info_header')
     };
     constructor(props) {
         super(props);
@@ -203,7 +203,7 @@ class InfoDocumentScreen extends Component {
         return (
             <ScrollView>
                 <View style={styles.container}>
-                    <Header title={I18n.t('title_info_header')} />
+                    {/* <Header title={I18n.t('title_info_header')} /> */}
                     <View style={styles.containerDoc}>
                         {checkDocument}
                         <TouchableOpacity

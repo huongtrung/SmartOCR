@@ -67,7 +67,7 @@ class ConfirmInfo extends Component {
     }
 
     static navigationOptions = {
-        header: null,
+        title: I18n.t('title_confirm_header')
     };
 
     checkNetwork() {
@@ -278,7 +278,7 @@ class ConfirmInfo extends Component {
         return (
             <View style={styles.container}>
                 <View style={styles.container}>
-                    <Header title={I18n.t('title_confirm_header')} />
+                    {/* <Header title={I18n.t('title_confirm_header')} /> */}
                     <View style={{
                         marginLeft: 15,
                         marginRight: 15,
@@ -312,6 +312,7 @@ class ConfirmInfo extends Component {
                 <Spinner
                     visible={this.state.spinner}
                     color="#f33f5e"
+                    cancelable={true}
                 />
             </View>
         );

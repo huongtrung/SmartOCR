@@ -14,7 +14,7 @@ I18n.translations = {
 }
 class ChooseDocument extends Component {
     static navigationOptions = {
-        header: null,
+        title: I18n.t('title_doc')
     };
     constructor(props) {
         super(props);
@@ -23,7 +23,7 @@ class ChooseDocument extends Component {
             webPage: '',
             lang: '',
             spinner: false,
-            mIsNotConnected: false
+            mIsNotConnected: false,
         }
     }
 
@@ -39,7 +39,8 @@ class ChooseDocument extends Component {
     componentDidMount() {
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectionChange.bind(this));
         
-        this.getDocumentAPI()
+        // this.getDocumentAPI()
+
     }
 
     componentWillUnmount() {
@@ -49,19 +50,28 @@ class ChooseDocument extends Component {
     handleConnectionChange = (isConnected) => {
         if (!isConnected) {
             this.setState({
-                mIsNotConnected: true
+                mIsNotConnected: true,
             })
-            Alert.alert(
-                I18n.t('title_not_connect'),
-                I18n.t('title_try'),
-                [
-                    { text: 'OK', onPress: () => { } },
-                ]
-            )
+            if(!this.alertPresent) {
+                this.alertPresent = true
+                Alert.alert(
+                    I18n.t('title_not_connect'),
+                    I18n.t('title_try'),
+                    [{
+                        text: 'OK',
+                        onPress: () => {}
+                    }, ]
+                )
+                console.log("isERRORALERTHANDLE ===> ")
+            } else {
+                this.alertPresent = false
+            }
+            
         } else {
             this.setState({
-                mIsNotConnected: false
+                mIsNotConnected: false,
             })
+            this.getDocumentAPI()
         }
     }
 
@@ -83,9 +93,11 @@ class ChooseDocument extends Component {
                         })
                     } else {
                         this.errorAlert()
+                        console.log("isERRORALERT ===> ")
                     }
                 })
                 .catch(error => {
+                    console.log("isERROR ===> ")
                     this.setState({
                         spinner: false
                     })
@@ -183,17 +195,17 @@ class ChooseDocument extends Component {
 
     render() {
         return (
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 1, justifyContent: "center" }}>
                 <ScrollView>
                     <View style={styles.containerView}>
-                        <Header title={I18n.t('title_doc')} />
+                        {/* <Header title={I18n.t('title_doc')} /> */}
                         <View style={styles.container}>
-                            <View style={this.state.mIsNotConnected ? styles.hidden : styles.containerRow}>
-                                <Text style={styles.textLang}>{I18n.t('title_vn')}</Text>
+                            <View style={styles.containerRow}>
+                                <Text style={[styles.textLang, !this.prepDataVN().length ? styles.hidden : {} ]}>{I18n.t('title_vn')}</Text>
                                 {this.prepDataVN().map((item) => this.renderItemVN({ item }))}
                             </View>
-                            <View style={this.state.mIsNotConnected ? styles.hidden : styles.containerRow} >
-                                <Text style={styles.textLang}>{I18n.t('title_jp')}</Text>
+                            <View style={styles.containerRow} >
+                                <Text style={[styles.textLang, !this.prepDataJP().length ? styles.hidden : {} ]}>{I18n.t('title_jp')}</Text>
                                 {this.prepDataJP().map((item) => this.renderItemJP({ item }))}
                             </View>
                         </View>
@@ -206,7 +218,9 @@ class ChooseDocument extends Component {
                 <Spinner
                     visible={this.state.spinner}
                     color="#f33f5e"
+                    cancelable={true}
                 />
+            {!this.prepDataVN().length || !this.prepDataJP().length ? <Text style={{position: "absolute", alignSelf: "center"}}>{I18n.t('title_not_connect')}</Text> : null}
             </View>
         );
     }
@@ -270,4 +284,5 @@ const styles = StyleSheet.create({
         width: 0,
         height: 0,
     },
+
 })
