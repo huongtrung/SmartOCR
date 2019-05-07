@@ -33,7 +33,10 @@ const RootStack = createStackNavigator(
         />
       ),
       headerTitleStyle: {
-        color: '#fff'
+        color: '#fff',
+        textAlign: 'center',
+        alignSelf: 'center',
+        flex: 1,
       },
       headerRight: null,
       headerLeft: null
