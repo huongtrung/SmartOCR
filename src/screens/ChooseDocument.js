@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView, StyleSheet, Alert, Text, TouchableOpacity, Linking, BackHandler } from 'react-native'
+import { View, ScrollView, StyleSheet, Alert, Text, TouchableOpacity, Linking, BackHandler, Platform } from 'react-native'
 import Header from '../components/Header';
 import I18n, { getLanguages } from 'react-native-i18n';
 import NetInfo from '@react-native-community/netinfo';
@@ -14,7 +14,8 @@ I18n.translations = {
 }
 class ChooseDocument extends Component {
     static navigationOptions = {
-        title: I18n.t('title_doc')
+        title: I18n.t('title_doc'),
+        gesturesEnabled: false
     };
     constructor(props) {
         super(props);
@@ -154,7 +155,7 @@ class ChooseDocument extends Component {
                 onPress={() => this.chooseItemDocument(item)}
                 style={styles.buttonJP}
                 underlayColor='#fff'>
-                <Text style={styles.buttonText}>{item.name}</Text>
+                <Text style={styles.buttonTextJP}>{item.name}</Text>
             </TouchableOpacity>
         )
     }
@@ -262,12 +263,23 @@ const styles = StyleSheet.create({
         paddingBottom: 10,
         marginLeft: 5,
         marginRight: 5,
-        marginBottom: 10,
         borderRadius: 5,
+        marginBottom: 10,
     },
     buttonText: {
         color: '#fff',
         fontSize: 18,
+        textAlign: 'center',
+    },
+    buttonTextJP: {
+        color: '#fff',
+        fontSize: 18,
+        ...Platform.select({
+            ios: {
+                paddingTop: 1.5,
+                paddingBottom: 1.5
+            }
+        }),
         textAlign: 'center',
     },
     bottomView: {
