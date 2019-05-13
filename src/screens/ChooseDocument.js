@@ -139,25 +139,33 @@ class ChooseDocument extends Component {
     }
 
     renderItemVN = ({ item }) => {
-        return (
+        if (item.id === 1) {
+            return (
             <TouchableOpacity key={item.id}
                 onPress={() => this.chooseItemDocument(item)}
                 style={styles.button}
                 underlayColor='#fff'>
                 <Text style={styles.buttonText}>{item.name}</Text>
             </TouchableOpacity>
-        )
+            )
+        } else {
+            return
+        }
     }
 
     renderItemJP = ({ item }) => {
-        return (
-            <TouchableOpacity key={item.id}
+        if (item.id === 5) {
+            return (
+                <TouchableOpacity key={item.id}
                 onPress={() => this.chooseItemDocument(item)}
                 style={styles.buttonJP}
                 underlayColor='#fff'>
                 <Text style={styles.buttonTextJP}>{item.name}</Text>
             </TouchableOpacity>
-        )
+            )
+        } else {
+            return
+        }
     }
 
     chooseItemDocument = (item) => {
