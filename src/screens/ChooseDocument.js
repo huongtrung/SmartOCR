@@ -39,7 +39,7 @@ class ChooseDocument extends Component {
 
     componentDidMount() {
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectionChange.bind(this));
-        
+
         // this.getDocumentAPI()
 
     }
@@ -53,21 +53,21 @@ class ChooseDocument extends Component {
             this.setState({
                 mIsNotConnected: true,
             })
-            if(!this.alertPresent) {
+            if (!this.alertPresent) {
                 this.alertPresent = true
                 Alert.alert(
                     I18n.t('title_not_connect'),
                     I18n.t('title_try'),
                     [{
                         text: 'OK',
-                        onPress: () => {}
-                    }, ]
+                        onPress: () => { }
+                    },]
                 )
                 console.log("isERRORALERTHANDLE ===> ")
             } else {
                 this.alertPresent = false
             }
-            
+
         } else {
             this.setState({
                 mIsNotConnected: false,
@@ -121,9 +121,16 @@ class ChooseDocument extends Component {
     prepDataVN = () => {
         let dataVN = []
         for (let i = 0; i < this.state.data.length; i++) {
-            if (this.state.data[i].language == 'VN') {
-                dataVN.push(this.state.data[i])
+            if (Platform.OS === 'ios') {
+                if (this.state.data[i].language == 'VN' && this.state.data[i].active) {
+                    dataVN.push(this.state.data[i])
+                }
+            } else {
+                if (this.state.data[i].language == 'VN') {
+                    dataVN.push(this.state.data[i])
+                }
             }
+
         }
         return dataVN
     }
@@ -131,51 +138,49 @@ class ChooseDocument extends Component {
     prepDataJP = () => {
         let dataJP = []
         for (let i = 0; i < this.state.data.length; i++) {
-            if (this.state.data[i].language == 'JP') {
-                dataJP.push(this.state.data[i])
+            if (Platform.OS === 'ios') {
+                if (this.state.data[i].language == 'JP' && this.state.data[i].active) {
+                    dataJP.push(this.state.data[i])
+                }
+            } else {
+                if (this.state.data[i].language == 'JP') {
+                    dataJP.push(this.state.data[i])
+                }
             }
         }
         return dataJP
     }
 
     renderItemVN = ({ item }) => {
-        if (item.id === 1) {
-            return (
+        return (
             <TouchableOpacity key={item.id}
                 onPress={() => this.chooseItemDocument(item)}
                 style={styles.button}
                 underlayColor='#fff'>
                 <Text style={styles.buttonText}>{item.name}</Text>
             </TouchableOpacity>
-            )
-        } else {
-            return
-        }
+        )
     }
 
     renderItemJP = ({ item }) => {
-        if (item.id === 5) {
-            return (
-                <TouchableOpacity key={item.id}
+        return (
+            <TouchableOpacity key={item.id}
                 onPress={() => this.chooseItemDocument(item)}
                 style={styles.buttonJP}
                 underlayColor='#fff'>
                 <Text style={styles.buttonTextJP}>{item.name}</Text>
             </TouchableOpacity>
-            )
-        } else {
-            return
-        }
+        )
     }
 
     chooseItemDocument = (item) => {
         if (item.active) {
-            console.log('type',item.id)
+            console.log('type', item.id)
             this.props.navigation.navigate('ChooseMethod', {
                 hasBack: item.has_back,
                 image: item.image,
                 url: item.url,
-                typeDocument : item.id
+                typeDocument: item.id
             })
         } else {
             Alert.alert(
@@ -210,11 +215,11 @@ class ChooseDocument extends Component {
                         {/* <Header title={I18n.t('title_doc')} /> */}
                         <View style={styles.container}>
                             <View style={styles.containerRow}>
-                                <Text style={[styles.textLang, !this.prepDataVN().length ? styles.hidden : {} ]}>{I18n.t('title_vn')}</Text>
+                                <Text style={[styles.textLang, !this.prepDataVN().length ? styles.hidden : {}]}>{I18n.t('title_vn')}</Text>
                                 {this.prepDataVN().map((item) => this.renderItemVN({ item }))}
                             </View>
                             <View style={styles.containerRow} >
-                                <Text style={[styles.textLang, !this.prepDataJP().length ? styles.hidden : {} ]}>{I18n.t('title_jp')}</Text>
+                                <Text style={[styles.textLang, !this.prepDataJP().length ? styles.hidden : {}]}>{I18n.t('title_jp')}</Text>
                                 {this.prepDataJP().map((item) => this.renderItemJP({ item }))}
                             </View>
                         </View>
@@ -229,7 +234,7 @@ class ChooseDocument extends Component {
                     color="#f33f5e"
                     cancelable={true}
                 />
-            {!this.prepDataVN().length || !this.prepDataJP().length ? <Text style={{position: "absolute", alignSelf: "center"}}>{I18n.t('title_not_connect')}</Text> : null}
+                {!this.prepDataVN().length || !this.prepDataJP().length ? <Text style={{ position: "absolute", alignSelf: "center" }}>{I18n.t('title_not_connect')}</Text> : null}
             </View>
         );
     }

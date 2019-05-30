@@ -18,7 +18,7 @@ export const DATA_BACK = 'data_back'
 export const IMG_FRONT = 'img_front'
 export const IMG_BACK = 'img_back'
 export const CMT = 1
-export const LICENSE = 5
+export const LICENSE = 6
 export const PASSPORT_VN = 2
 export const PASSPORT_JP = 7
 
