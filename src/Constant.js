@@ -12,11 +12,17 @@ export const SEX = 'sex'
 export const NAME = 'name'
 export const ISSUE_DATE = 'issue_date'
 export const ISSUE_AT = 'issue_at'
-export const FILE_PATH_FRONT ='file_path_front'
-export const DATA_FRONT ='data_front'
-export const DATA_BACK ='data_back'
-export const IMG_FRONT ='img_front'
-export const IMG_BACK ='img_back'
+export const FILE_PATH_FRONT = 'file_path_front'
+export const DATA_FRONT = 'data_front'
+export const DATA_BACK = 'data_back'
+export const IMG_FRONT = 'img_front'
+export const IMG_BACK = 'img_back'
+export const CMT = 1
+export const LICENSE = 5
+export const PASSPORT_VN = 2
+export const PASSPORT_JP = 7
+
+
 
 
 

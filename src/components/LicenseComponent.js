@@ -10,7 +10,7 @@ I18n.translations = {
     'ja': require('../translation/ja'),
 }
 
-export default class CmtComponent extends Component {
+export default class LicenseComponent extends Component {
     constructor(props) {
         super(props);
     }
@@ -24,6 +24,9 @@ export default class CmtComponent extends Component {
                     resizeMode='contain'
                     style={this.props.isFrontNotEmpty ? styles.hidden : [styles.img, styles.marginBottom]}
                 />
+                <TitleText title="ID" />
+                <ContentText text={this.props.mID} />
+                
                 <TitleText title={I18n.t('title_name_license')} />
                 <ContentText text={this.props.mNameLicense} />
 
@@ -35,6 +38,9 @@ export default class CmtComponent extends Component {
 
                 <TitleText title={I18n.t('title_address_license')} />
                 <ContentText text={this.props.mAddressLicense} />
+
+                <TitleText title={I18n.t('title_expire')} />
+                <ContentText text={this.props.mExpireDateTime} />
             </View>
         );
     }

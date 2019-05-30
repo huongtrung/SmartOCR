@@ -4,6 +4,7 @@ import I18n, { getLanguages } from 'react-native-i18n';
 import Header from '../components/Header';
 import CmtComponent from '../components/CmtComponent';
 import LicenseComponent from '../components/LicenseComponent';
+import PassportComponent from '../components/PassportComponent';
 import LinearGradient from 'react-native-linear-gradient';
 import * as Constant from '../Constant';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -39,6 +40,16 @@ class InfoDocumentScreen extends Component {
             mBirthGengoLicense: '',
             mBirthYyyyMmDdLicense: '',
             mAddressLicense: '',
+            mID: '',
+            mExpireDateTime: '',
+
+            mPassportName: '',
+            mPassportNumber: '',
+            mPassportExpireDate: '',
+            mPassportNationCode: '',
+            mPassportNation: '',
+            mPassportSex: '',
+            mPassportBirthday: '',
 
             mHasBack: hasBack,
             mIsCam: isCam,
@@ -47,7 +58,7 @@ class InfoDocumentScreen extends Component {
             isSexEmpty: false,
             isCreateAtEmpty: false,
             mTypeDocument: typeDocument,
-            mErrorMessage : ''
+            mErrorMessage: ''
         }
         console.log('mTypeDocument', this.state.mTypeDocument)
     }
@@ -62,17 +73,21 @@ class InfoDocumentScreen extends Component {
             this.setState({ languages });
         });
         switch (this.state.mTypeDocument) {
-            case 5:
+            case Constant.PASSPORT_VN, Constant.PASSPORT_JP:
                 AsyncStorage.getItem(Constant.DATA_FRONT, (err, result) => {
                     try {
                         let frontObj = JSON.parse(result);
+                        console.log('frontObj', frontObj)
+
                         if (frontObj != null) {
                             this.setState({
-                                mNameLicense: frontObj.Kanji_Name,
-                                mBirthGengoLicense: frontObj.BirthGengo +frontObj.BirthYy + "年" + frontObj.BirthMm + "月" + frontObj.BirthDd + "日",
-                                mBirthYyyyMmDdLicense: frontObj.BirthYyyyMmDd,
-                                mAddressLicense: frontObj.Address,
-                                mErrorMessage : frontObj.ErrorMessageId
+                                mPassportName: frontObj.primary_identifier + " " + frontObj.secondary_id,
+                                mPassportNumber: frontObj.passport_number,
+                                mPassportExpireDate: frontObj.expiration,
+                                mPassportNationCode: frontObj.country,
+                                mPassportNation: frontObj.nationality,
+                                mPassportSex: frontObj.sex,
+                                mPassportBirthday: frontObj.date_of_birth
                             })
                         } else {
                             this.setState({
@@ -84,7 +99,33 @@ class InfoDocumentScreen extends Component {
                     }
                 });
                 break;
-            case 1:
+            case Constant.LICENSE:
+                AsyncStorage.getItem(Constant.DATA_FRONT, (err, result) => {
+                    try {
+                        let frontObj = JSON.parse(result);
+                        console.log('frontObj', frontObj)
+
+                        if (frontObj != null) {
+                            this.setState({
+                                mNameLicense: frontObj.Kanji_Name,
+                                mBirthGengoLicense: frontObj.BirthGengo + frontObj.BirthYy + "年" + frontObj.BirthMm + "月" + frontObj.BirthDd + "日",
+                                mBirthYyyyMmDdLicense: frontObj.BirthYyyyMmDd,
+                                mAddressLicense: frontObj.Address,
+                                mErrorMessage: frontObj.ErrorMessageId,
+                                mID: frontObj.ID,
+                                mExpireDateTime: frontObj.Expire_Datetime
+                            })
+                        } else {
+                            this.setState({
+                                isFrontNotEmpty: true
+                            })
+                        }
+                    } catch (ex) {
+                        console.error(ex);
+                    }
+                });
+                break;
+            case Constant.CMT:
                 AsyncStorage.getItem(Constant.DATA_FRONT, (err, result) => {
                     try {
                         let frontObj = JSON.parse(result);
@@ -174,7 +215,7 @@ class InfoDocumentScreen extends Component {
 
     render() {
 
-        let checkDocument = this.state.mTypeDocument === 1 ?
+        let checkDocument = this.state.mTypeDocument === Constant.CMT ?
             <CmtComponent
                 mFileFrontPath={this.state.mFileFrontPath}
                 isFrontNotEmpty={this.state.isFrontNotEmpty}
@@ -189,8 +230,10 @@ class InfoDocumentScreen extends Component {
                 mSex={this.state.mSex}
                 isSexEmpty={this.state.isSexEmpty}
                 mAddress={this.state.mAddress}
-            /> : this.state.mTypeDocument === 5 ?
+            /> : this.state.mTypeDocument === Constant.LICENSE ?
                 <LicenseComponent
+                    mID={this.state.mID}
+                    mExpireDateTime={this.state.mExpireDateTime}
                     mErrorMessage={this.state.mErrorMessage}
                     mFileFrontPath={this.state.mFileFrontPath}
                     isFrontNotEmpty={this.state.isFrontNotEmpty}
@@ -199,11 +242,22 @@ class InfoDocumentScreen extends Component {
                     mBirthdayNumberLicense={this.state.mBirthYyyyMmDdLicense}
                     mAddressLicense={this.state.mAddressLicense}
 
-                /> : null
+                /> : this.state.mTypeDocument === Constant.PASSPORT_JP || Constant.PASSPORT_VN ?
+                    <PassportComponent
+                        mPassportName={this.state.mPassportName}
+                        mPassportNumber={this.state.mPassportNumber}
+                        mPassportExpireDate={this.state.mPassportExpireDate}
+                        mPassportNationCode={this.state.mPassportNationCode}
+                        mPassportNation={this.state.mPassportNation}
+                        mPassportSex={this.state.mPassportSex}
+                        mPassportBirthday={this.state.mPassportBirthday}
+                        mFileFrontPath={this.state.mFileFrontPath}
+                        isFrontNotEmpty={this.state.isFrontNotEmpty}
+                    />
+                    : null
         return (
             <ScrollView>
                 <View style={styles.container}>
-                    {/* <Header title={I18n.t('title_info_header')} /> */}
                     <View style={styles.containerDoc}>
                         {checkDocument}
                         <TouchableOpacity

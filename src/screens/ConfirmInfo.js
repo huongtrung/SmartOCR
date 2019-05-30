@@ -97,6 +97,7 @@ class ConfirmInfo extends Component {
             'Content-Type': 'multipart/form-data',
             'api-key': Constant.API_KEY
         }
+        console.log(form);
         return axios.post(this.state.mUrl, form, { headers }).then(res => {
             this.setState({
                 spinner: false

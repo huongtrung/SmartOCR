@@ -42,6 +42,12 @@
   "title_birthday_license" :"Ngày sinh (Era Tên)",
   "title_birth_yyyyMmDd_license" :"Ngày sinh",
   "title_address_license" :"Địa chỉ",
-  "title_not_detect":"Không detect được tài liệu"
-
+  "title_not_detect":"Không detect được tài liệu",
+  "title_expire": "Ngày hết hạn :",
+  "title_country_code": "Mã quốc gia :",
+  "title_expiration": "Ngày hết hạn :",
+  "title_nationality": "Quốc tịch :",
+  "title_passport_number": "Số hộ chiếu :",
+  "primary_identifier": "Họ :",
+  "secondary_id": "Tên :"
 }
