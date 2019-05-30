@@ -73,7 +73,9 @@ class InfoDocumentScreen extends Component {
             this.setState({ languages });
         });
         switch (this.state.mTypeDocument) {
-            case Constant.PASSPORT_VN, Constant.PASSPORT_JP:
+            case Constant.PASSPORT_VN:
+            case Constant.PASSPORT_JP:    
+                console.log('Constant.PASSPORT_VN, Constant.PASSPORT_JP')
                 AsyncStorage.getItem(Constant.DATA_FRONT, (err, result) => {
                     try {
                         let frontObj = JSON.parse(result);

@@ -81,7 +81,7 @@ class ConfirmInfo extends Component {
         }
     }
 
-    uploadImage = async() => {
+    uploadImage = async () => {
         try {
             this.setState({
                 spinner: true
@@ -104,9 +104,8 @@ class ConfirmInfo extends Component {
                 this.setState({
                     spinner: false
                 });
-                console.log("res",res);
                 console.log(res.data);
-                console.log(res.status);
+
                 if (res.status == Constant.RESULT_OK) {
                     if (res.data.front_flg == -1) {
                         Alert.alert(
@@ -168,25 +167,12 @@ class ConfirmInfo extends Component {
                 }
 
             }).catch((error) => {
-
-                if (error.response) {
-                    // The request was made, but the server responded with a status code
-                    // that falls out of the range of 2xx
-                    console.log(error.response.data);
-                    console.log(error.response.status);
-                    console.log(error.response.headers);
-                  } else {
-                    // Something happened in setting up the request that triggered an Error
-                    console.log('Error', error.message);
-                  }
-                  console.log(error.config);
-
-                // alert(err)
-                // console.log("err", err);
-                // this.setState({
-                //     spinner: false
-                // });
-                // this.errorAlert()
+                alert(err)
+                console.log("err", err);
+                this.setState({
+                    spinner: false
+                });
+                this.errorAlert()
             });
         } catch (e) {
             alert(e)
