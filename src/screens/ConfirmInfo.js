@@ -81,98 +81,121 @@ class ConfirmInfo extends Component {
         }
     }
 
-    uploadImage = () => {
-        this.setState({
-            spinner: true
-        });
-        const form = new FormData()
-        form.append('image', {
-            name: 'image',
-            uri: this.state.mFilePath,
-            type: 'image/*'
-        })
-        if (this.state.mTypeDocument != 5) {
-            form.append('encode', 1)
-        }
-        const headers = {
-            'Content-Type': 'multipart/form-data',
-            'api-key': Constant.API_KEY
-        }
-        console.log(form);
-        return axios.post(this.state.mUrl, form, { headers }).then(res => {
+    uploadImage = async() => {
+        try {
             this.setState({
-                spinner: false
+                spinner: true
             });
-            console.log(res.data);
-            console.log(res.status);
-            if (res.status == Constant.RESULT_OK) {
-                if (res.data.front_flg == -1) {
-                    Alert.alert(
-                        I18n.t('title_error_pick'),
-                        I18n.t('title_msg'),
-                        [
-                            { text: 'OK', onPress: () => { } },
-                        ]
-                    )
-                }
-                else if (res.data.ErrorMessageId == 'Error text line detection (size of img is smaller than 3) : 0') {
-                    Alert.alert(
-                        I18n.t('title_not_detect'),
-                        '',
-                        [
-                            { text: 'OK', onPress: () => { } },
-                        ]
-                    )
-                }
-                else {
-                    if (res.data.front_flg == 1) {
-                        AsyncStorage.setItem(Constant.DATA_BACK, JSON.stringify(res.data), () => { });
-                        AsyncStorage.setItem(Constant.IMG_BACK, this.state.mFilePath);
-                    } else {
-                        AsyncStorage.setItem(Constant.DATA_FRONT, JSON.stringify(res.data), () => { });
-                        AsyncStorage.setItem(Constant.IMG_FRONT, this.state.mFilePath);
-                    }
-                    switch (this.state.mFlagCam) {
-                        case Constant.TYPE_FRONT:
-                            if (this.state.mHasBack) {
-                                this.setState({
-                                    mFlagCam: Constant.TYPE_BACK
-                                })
-                                if (this.state.mTypeTake == Constant.TYPE_TAKE_CAMERA) {
-                                    console.log("TYPE TAKE ===> ", this.state.mTypeTake)
-                                    this.gotoCameraScreen()
-                                } else {
-                                    this.openPickImage()
-                                }
-                            } else {
-                                console.log(this.state.mTypeDocument)
-                                this.props.navigation.navigate('InfoDocumentScreen', {
-                                    hasBack: this.state.mHasBack,
-                                    isCam: this.state.mIsCam,
-                                    typeDocument: this.state.mTypeDocument
-                                })
-                            }
-                            break;
-                        case Constant.TYPE_BACK:
-                            this.props.navigation.navigate('InfoDocumentScreen', {
-                                isCam: this.state.mIsCam,
-                                typeDocument: this.state.mTypeDocument
-                            })
-                            break;
-                    }
-                }
-            } else {
-                this.errorAlert()
+            const form = new FormData()
+            form.append('image', {
+                name: 'image',
+                uri: this.state.mFilePath,
+                type: 'image/*'
+            })
+            if (this.state.mTypeDocument != 5) {
+                form.append('encode', 1)
             }
-
-        })
-            .catch(err => {
-                console.log(err);
+            const headers = {
+                'Content-Type': 'multipart/form-data',
+                'api-key': Constant.API_KEY
+            }
+            console.log(form);
+            return await axios.post(this.state.mUrl, form, { headers }).then(res => {
                 this.setState({
                     spinner: false
                 });
-                this.errorAlert()
+                console.log("res",res);
+                console.log(res.data);
+                console.log(res.status);
+                if (res.status == Constant.RESULT_OK) {
+                    if (res.data.front_flg == -1) {
+                        Alert.alert(
+                            I18n.t('title_error_pick'),
+                            I18n.t('title_msg'),
+                            [
+                                { text: 'OK', onPress: () => { } },
+                            ]
+                        )
+                    }
+                    else if (res.data.ErrorMessageId == 'Error text line detection (size of img is smaller than 3) : 0') {
+                        Alert.alert(
+                            I18n.t('title_not_detect'),
+                            '',
+                            [
+                                { text: 'OK', onPress: () => { } },
+                            ]
+                        )
+                    }
+                    else {
+                        if (res.data.front_flg == 1) {
+                            AsyncStorage.setItem(Constant.DATA_BACK, JSON.stringify(res.data), () => { });
+                            AsyncStorage.setItem(Constant.IMG_BACK, this.state.mFilePath);
+                        } else {
+                            AsyncStorage.setItem(Constant.DATA_FRONT, JSON.stringify(res.data), () => { });
+                            AsyncStorage.setItem(Constant.IMG_FRONT, this.state.mFilePath);
+                        }
+                        switch (this.state.mFlagCam) {
+                            case Constant.TYPE_FRONT:
+                                if (this.state.mHasBack) {
+                                    this.setState({
+                                        mFlagCam: Constant.TYPE_BACK
+                                    })
+                                    if (this.state.mTypeTake == Constant.TYPE_TAKE_CAMERA) {
+                                        console.log("TYPE TAKE ===> ", this.state.mTypeTake)
+                                        this.gotoCameraScreen()
+                                    } else {
+                                        this.openPickImage()
+                                    }
+                                } else {
+                                    console.log(this.state.mTypeDocument)
+                                    this.props.navigation.navigate('InfoDocumentScreen', {
+                                        hasBack: this.state.mHasBack,
+                                        isCam: this.state.mIsCam,
+                                        typeDocument: this.state.mTypeDocument
+                                    })
+                                }
+                                break;
+                            case Constant.TYPE_BACK:
+                                this.props.navigation.navigate('InfoDocumentScreen', {
+                                    isCam: this.state.mIsCam,
+                                    typeDocument: this.state.mTypeDocument
+                                })
+                                break;
+                        }
+                    }
+                } else {
+                    this.errorAlert()
+                }
+
+            }).catch((error) => {
+
+                if (error.response) {
+                    // The request was made, but the server responded with a status code
+                    // that falls out of the range of 2xx
+                    console.log(error.response.data);
+                    console.log(error.response.status);
+                    console.log(error.response.headers);
+                  } else {
+                    // Something happened in setting up the request that triggered an Error
+                    console.log('Error', error.message);
+                  }
+                  console.log(error.config);
+
+                // alert(err)
+                // console.log("err", err);
+                // this.setState({
+                //     spinner: false
+                // });
+                // this.errorAlert()
             });
+        } catch (e) {
+            alert(e)
+            console.log("err", err);
+            this.setState({
+                spinner: false
+            });
+            this.errorAlert()
+        }
     }
 
     errorAlert() {
