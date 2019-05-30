@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ImageBackground, StyleSheet, View, Text, TouchableOpacity, Alert, Image } from 'react-native';
+import { ImageBackground, StyleSheet, View, Text, TouchableOpacity, Alert, Image, Platform } from 'react-native';
 import I18n, { getLanguages } from 'react-native-i18n';
 import Header from '../components/Header';
 import LinearGradient from 'react-native-linear-gradient';
@@ -57,6 +57,9 @@ class ChooseMethod extends Component {
             } else {
                 console.log('response', response)
 
+                if (Platform.OS === "ios") {
+                    response.uri = response.uri.replace("file://", "");
+                }
                 RNFetchBlob.fs.stat(response.uri)
                     .then((stats) => {
                         console.log(stats)

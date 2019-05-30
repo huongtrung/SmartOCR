@@ -4,6 +4,7 @@ import {
   Text,
   View,
   TouchableOpacity,
+  Platform
 } from 'react-native';
 import { RNCamera } from 'react-native-camera';
 import LinearGradient from 'react-native-linear-gradient';
@@ -84,11 +85,14 @@ export default class CameraScreen extends React.Component {
         orientation: 'portrait'
       };
       const data = await this.camera.takePictureAsync(options);
-      console.log(data)
+      console.log(data.uri)
       this.setState({
         spinner: true
       })
 
+      if (Platform.OS === "ios") {
+        data.uri = data.uri.replace("file://", "");
+      }
       RNFetchBlob.fs.stat(data.uri)
         .then((stats) => {
           console.log(stats)
@@ -128,7 +132,9 @@ export default class CameraScreen extends React.Component {
             })
           }
         })
-        .catch((err) => { })
+        .catch((err) => {
+          console.log("LOI ===> ", err)
+         })
     }
   }
 
