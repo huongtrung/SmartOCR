@@ -12,6 +12,7 @@
       android:icon="@mipmap/icon_app"
       android:roundIcon="@mipmap/icon_app"
       android:allowBackup="false"
+      android:largeHeap="true"
       android:theme="@style/AppTheme">
       <activity
         android:name=".MainActivity"

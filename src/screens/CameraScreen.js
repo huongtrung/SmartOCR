@@ -79,62 +79,66 @@ export default class CameraScreen extends React.Component {
   }
 
   takePicture = async () => {
-    if (this.camera) {
-      options = {
-        fixOrientation: true,
-        orientation: 'portrait'
-      };
-      const data = await this.camera.takePictureAsync(options);
-      console.log(data.uri)
-      this.setState({
-        spinner: true
-      })
-
-      if (Platform.OS === "ios") {
-        data.uri = data.uri.replace("file://", "");
-      }
-      RNFetchBlob.fs.stat(data.uri)
-        .then((stats) => {
-          console.log(stats)
-          if (stats.size > 3000000) {
-            console.log('file > 500000')
-            ImageResizer.createResizedImage(data.uri, this.photoQuality, (this.photoQuality * 4) / 3, 'JPEG', 70)
-              .then(({ uri }) => {
-                this.setState({
-                  spinner: false
-                })
-                this.props.navigation.navigate('ConfirmInfo', {
-                  isCam: true,
-                  filePath: uri,
-                  typeTake: Constant.TYPE_TAKE_CAMERA,
-                  flagCam: this.state.mFlagCam,
-                  hasBack: this.state.mHasBack,
-                  url: this.state.mUrl,
-                  typeDocument: this.state.mTypeDocument
-                })
-              })
-              .catch(err => {
-                console.log(err);
-              });
-          } else {
-            this.setState({
-              spinner: false
-            })
-            console.log('file < 500000')
-            this.props.navigation.navigate('ConfirmInfo', {
-              isCam: true,
-              filePath: data.uri,
-              typeTake: Constant.TYPE_TAKE_CAMERA,
-              flagCam: this.state.mFlagCam,
-              hasBack: this.state.mHasBack,
-              url: this.state.mUrl,
-              typeDocument: this.state.mTypeDocument
-            })
-          }
+    try {
+      if (this.camera) {
+        options = {
+          fixOrientation: true,
+          orientation: 'portrait'
+        };
+        const data = await this.camera.takePictureAsync(options);
+        console.log(data.uri)
+        this.setState({
+          spinner: true
         })
-        .catch((err) => {
-          console.log("LOI ===> ", err)
-         })
+
+        if (Platform.OS === "ios") {
+          data.uri = data.uri.replace("file://", "");
+        }
+        RNFetchBlob.fs.stat(data.uri)
+          .then((stats) => {
+            console.log(stats)
+            if (stats.size > 3000000) {
+              console.log('file > 500000')
+              ImageResizer.createResizedImage(data.uri, this.photoQuality, (this.photoQuality * 4) / 3, 'JPEG', 70)
+                .then(({ uri }) => {
+                  this.setState({
+                    spinner: false
+                  })
+                  this.props.navigation.navigate('ConfirmInfo', {
+                    isCam: true,
+                    filePath: uri,
+                    typeTake: Constant.TYPE_TAKE_CAMERA,
+                    flagCam: this.state.mFlagCam,
+                    hasBack: this.state.mHasBack,
+                    url: this.state.mUrl,
+                    typeDocument: this.state.mTypeDocument
+                  })
+                })
+                .catch(err => {
+                  console.log(err);
+                });
+            } else {
+              this.setState({
+                spinner: false
+              })
+              console.log('file < 500000')
+              this.props.navigation.navigate('ConfirmInfo', {
+                isCam: true,
+                filePath: data.uri,
+                typeTake: Constant.TYPE_TAKE_CAMERA,
+                flagCam: this.state.mFlagCam,
+                hasBack: this.state.mHasBack,
+                url: this.state.mUrl,
+                typeDocument: this.state.mTypeDocument
+              })
+            }
+          })
+          .catch((err) => {
+            console.log("LOI ===> ", err)
+          })
+      }
+    } catch (e) {
+      console.log('eeeeee', e)
     }
   }
 
