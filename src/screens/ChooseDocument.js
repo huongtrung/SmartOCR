@@ -98,7 +98,6 @@ class ChooseDocument extends Component {
                     }
                 })
                 .catch(error => {
-                    console.log("isERROR ===> ")
                     this.setState({
                         spinner: false
                     })

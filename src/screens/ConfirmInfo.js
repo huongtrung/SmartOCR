@@ -92,7 +92,7 @@ class ConfirmInfo extends Component {
                 uri: this.state.mFilePath,
                 type: 'image/*'
             })
-            if (this.state.mTypeDocument != 5) {
+            if (this.state.mTypeDocument == Constant.CMT || Constant.LICENSE_VN) {
                 form.append('encode', 1)
             }
             const headers = {
@@ -337,11 +337,6 @@ class ConfirmInfo extends Component {
                         </LinearGradient>
                     </TouchableOpacity>
                 </View>
-                {/* <Spinner
-                    visible={this.state.spinner}
-                    color="#f33f5e"
-                    // cancelable={true}
-                /> */}
                 {this.state.spinner ? <ViewLoading /> : null}
             </View>
         );

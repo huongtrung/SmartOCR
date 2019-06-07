@@ -4,6 +4,7 @@ import I18n, { getLanguages } from 'react-native-i18n';
 import Header from '../components/Header';
 import CmtComponent from '../components/CmtComponent';
 import LicenseComponent from '../components/LicenseComponent';
+import LicenceVNComponent from '../components/LicenceVNComponent';
 import PassportComponent from '../components/PassportComponent';
 import LinearGradient from 'react-native-linear-gradient';
 import * as Constant from '../Constant';
@@ -58,7 +59,11 @@ class InfoDocumentScreen extends Component {
             isSexEmpty: false,
             isCreateAtEmpty: false,
             mTypeDocument: typeDocument,
-            mErrorMessage: ''
+            mErrorMessage: '',
+
+            mExpiry: '',
+            mNational: '',
+
         }
         console.log('mTypeDocument', this.state.mTypeDocument)
     }
@@ -72,9 +77,10 @@ class InfoDocumentScreen extends Component {
         getLanguages().then(languages => {
             this.setState({ languages });
         });
+        console.log('this.state.mTypeDocument', this.state.mTypeDocument)
         switch (this.state.mTypeDocument) {
             case Constant.PASSPORT_VN:
-            case Constant.PASSPORT_JP:    
+            case Constant.PASSPORT_JP:
                 console.log('Constant.PASSPORT_VN, Constant.PASSPORT_JP')
                 AsyncStorage.getItem(Constant.DATA_FRONT, (err, result) => {
                     try {
@@ -188,6 +194,34 @@ class InfoDocumentScreen extends Component {
                     }
                 });
                 break;
+            case Constant.LICENSE_VN:
+                AsyncStorage.getItem(Constant.DATA_FRONT, (err, result) => {
+                    try {
+                        let frontObj = JSON.parse(result);
+                        if (frontObj != null) {
+                            console.log("===frontObj===", frontObj);
+                            this.setState({
+                                mAddress: frontObj.address,
+                                mClass: frontObj.class,
+                                mExpiry: frontObj.expiry,
+                                mName: frontObj.name,
+                                mID: frontObj.id,
+                                mBirthday: frontObj.birthday,
+                                mIssueAt: frontObj.issue_at,
+                                mIssueDate: frontObj.issue_date,
+                                mNational: frontObj.national,
+
+                            })
+                        } else {
+                            this.setState({
+                                isFrontNotEmpty: true
+                            })
+                        }
+                    } catch (ex) {
+                        console.error(ex);
+                    }
+                });
+                break;
         }
         AsyncStorage.getItem(Constant.IMG_BACK, (err, result) => {
             this.setState({
@@ -217,46 +251,61 @@ class InfoDocumentScreen extends Component {
 
     render() {
 
-        let checkDocument = this.state.mTypeDocument === Constant.CMT ?
-            <CmtComponent
-                mFileFrontPath={this.state.mFileFrontPath}
-                isFrontNotEmpty={this.state.isFrontNotEmpty}
-                mHasBack={this.state.mHasBack}
-                isBackNotEmpty={this.state.isBackNotEmpty}
-                mFileBackPath={this.state.mFileBackPath}
-                mName={this.state.mName}
-                mID={this.state.mID}
-                mCreateDate={this.state.mCreateDate}
-                isCreateAtEmpty={this.state.isCreateAtEmpty}
-                mBirthday={this.state.mBirthday}
-                mSex={this.state.mSex}
-                isSexEmpty={this.state.isSexEmpty}
-                mAddress={this.state.mAddress}
-            /> : this.state.mTypeDocument === Constant.LICENSE ?
-                <LicenseComponent
-                    mID={this.state.mID}
-                    mExpireDateTime={this.state.mExpireDateTime}
-                    mErrorMessage={this.state.mErrorMessage}
+        let checkDocument =
+            this.state.mTypeDocument === Constant.LICENSE_VN ?
+                <LicenceVNComponent
                     mFileFrontPath={this.state.mFileFrontPath}
                     isFrontNotEmpty={this.state.isFrontNotEmpty}
-                    mNameLicense={this.state.mNameLicense}
-                    mBirthdayLicense={this.state.mBirthGengoLicense}
-                    mBirthdayNumberLicense={this.state.mBirthYyyyMmDdLicense}
-                    mAddressLicense={this.state.mAddressLicense}
-
-                /> : this.state.mTypeDocument === Constant.PASSPORT_JP || Constant.PASSPORT_VN ?
-                    <PassportComponent
-                        mPassportName={this.state.mPassportName}
-                        mPassportNumber={this.state.mPassportNumber}
-                        mPassportExpireDate={this.state.mPassportExpireDate}
-                        mPassportNationCode={this.state.mPassportNationCode}
-                        mPassportNation={this.state.mPassportNation}
-                        mPassportSex={this.state.mPassportSex}
-                        mPassportBirthday={this.state.mPassportBirthday}
+                    mName={this.state.mName}
+                    mID={this.state.mID}
+                    mClass={this.state.mClass}
+                    mExpiry={this.state.mExpiry}
+                    mCreateDate={this.state.mIssueDate}
+                    mCreateAt={this.state.mIssueAt}
+                    mBirthday={this.state.mBirthday}
+                    mNational={this.state.mNational}
+                    mAddress={this.state.mAddress}
+                /> :
+                this.state.mTypeDocument === Constant.CMT ?
+                    <CmtComponent
                         mFileFrontPath={this.state.mFileFrontPath}
                         isFrontNotEmpty={this.state.isFrontNotEmpty}
-                    />
-                    : null
+                        mHasBack={this.state.mHasBack}
+                        isBackNotEmpty={this.state.isBackNotEmpty}
+                        mFileBackPath={this.state.mFileBackPath}
+                        mName={this.state.mName}
+                        mID={this.state.mID}
+                        mCreateDate={this.state.mCreateDate}
+                        isCreateAtEmpty={this.state.isCreateAtEmpty}
+                        mBirthday={this.state.mBirthday}
+                        mSex={this.state.mSex}
+                        isSexEmpty={this.state.isSexEmpty}
+                        mAddress={this.state.mAddress}
+                    /> : this.state.mTypeDocument === Constant.LICENSE ?
+                        <LicenseComponent
+                            mID={this.state.mID}
+                            mExpireDateTime={this.state.mExpireDateTime}
+                            mErrorMessage={this.state.mErrorMessage}
+                            mFileFrontPath={this.state.mFileFrontPath}
+                            isFrontNotEmpty={this.state.isFrontNotEmpty}
+                            mNameLicense={this.state.mNameLicense}
+                            mBirthdayLicense={this.state.mBirthGengoLicense}
+                            mBirthdayNumberLicense={this.state.mBirthYyyyMmDdLicense}
+                            mAddressLicense={this.state.mAddressLicense}
+
+                        /> : this.state.mTypeDocument === Constant.PASSPORT_JP || Constant.PASSPORT_VN ?
+                            <PassportComponent
+                                mPassportName={this.state.mPassportName}
+                                mPassportNumber={this.state.mPassportNumber}
+                                mPassportExpireDate={this.state.mPassportExpireDate}
+                                mPassportNationCode={this.state.mPassportNationCode}
+                                mPassportNation={this.state.mPassportNation}
+                                mPassportSex={this.state.mPassportSex}
+                                mPassportBirthday={this.state.mPassportBirthday}
+                                mFileFrontPath={this.state.mFileFrontPath}
+                                isFrontNotEmpty={this.state.isFrontNotEmpty}
+                            />
+                            : null
         return (
             <ScrollView>
                 <View style={styles.container}>

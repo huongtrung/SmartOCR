@@ -49,5 +49,7 @@
   "title_nationality": "Quốc tịch :",
   "title_passport_number": "Số hộ chiếu :",
   "primary_identifier": "Họ :",
-  "secondary_id": "Tên :"
+  "secondary_id": "Tên :",
+  "title_class": "Hạng : "
+
 }
