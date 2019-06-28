@@ -169,6 +169,7 @@ class InfoDocumentScreen extends Component {
                 AsyncStorage.getItem(Constant.DATA_BACK, (err, result) => {
                     try {
                         let backObj = JSON.parse(result);
+                        console.log('backObj', backObj)
                         if (backObj != null) {
                             if (backObj.issue_at === 'N/A') {
                                 console.log(backObj.issue_at);
@@ -250,7 +251,6 @@ class InfoDocumentScreen extends Component {
     }
 
     render() {
-
         let checkDocument =
             this.state.mTypeDocument === Constant.LICENSE_VN ?
                 <LicenceVNComponent
@@ -276,6 +276,7 @@ class InfoDocumentScreen extends Component {
                         mName={this.state.mName}
                         mID={this.state.mID}
                         mCreateDate={this.state.mCreateDate}
+                        mCreateAt={this.state.mCreateAt}
                         isCreateAtEmpty={this.state.isCreateAtEmpty}
                         mBirthday={this.state.mBirthday}
                         mSex={this.state.mSex}

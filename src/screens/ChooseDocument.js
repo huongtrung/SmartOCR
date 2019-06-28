@@ -224,9 +224,9 @@ class ChooseDocument extends Component {
                         </View>
                     </View>
                 </ScrollView>
-                <View style={styles.bottomView}>
+                {/* <View style={styles.bottomView}>
                     <Text onPress={() => { Linking.openURL(this.state.webPage) }} style={styles.textInfo}>{I18n.t('title_info')}</Text>
-                </View>
+                </View> */}
 
                 <Spinner
                     visible={this.state.spinner}
