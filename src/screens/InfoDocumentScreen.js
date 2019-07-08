@@ -276,6 +276,7 @@ class InfoDocumentScreen extends Component {
                         mName={this.state.mName}
                         mID={this.state.mID}
                         mCreateDate={this.state.mCreateDate}
+                        mCreateAt={this.state.mCreateAt}
                         isCreateAtEmpty={this.state.isCreateAtEmpty}
                         mBirthday={this.state.mBirthday}
                         mSex={this.state.mSex}
